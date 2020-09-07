@@ -9,6 +9,7 @@ After downloading the project, execute the following commands:
 * ```npm install```
 * ```ng build```
 * ```npm start```
+
 The application should now be available at http://localhost:3000 (with the developer version at http://localhost:4200).
 
 ## Visualisation
