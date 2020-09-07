@@ -37,11 +37,16 @@ module.exports = (function () {
             }
           }, function (err, cursor) {
             if (err) throw err;
+            function dup(val,arr){
+              return arr.some(e => e.name == val.name && e.fasta == val.fasta)
+            }
             cursor.each(function (err, file) {
               if (err) throw err;
-              if (file != null) {
+              if (file != null && !dup(file,files)) {
                 files.push(file);
-              } else {
+              } else if (file != null && dup(file,files)){
+
+              }else {
 
                 let ids = []
                 for (let i = 0; i < files.length; i++) {

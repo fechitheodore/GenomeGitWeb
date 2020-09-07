@@ -163,7 +163,6 @@ export class FileDatabase {
     this.nodes = [];
      //dict for filename, id
      var parentdict = {};
-     var m =0
     if (obj !== null) {
       //data has the following format:
       //for fasta files: data{chromosomes as Array}, format{file format as string}, name{filename as string},project{project ids as Array}, _id{fileID}
@@ -214,7 +213,6 @@ export class FileDatabase {
                 parentNode.children.push(child);
               }  else if (obj[j].format === "rearrangment" && (obj[j].OldFasta === parentNode.fileID || obj[j].NewFasta === parentNode.fileID)){
                 //create the node to show movements
-                m++
                 child = new FileNode;
                 child.projectID = parentNode.projectID;
                 child.format = obj[j].format
@@ -224,8 +222,6 @@ export class FileDatabase {
                 child.NewFasta = obj[j].NewFasta;
                 child.fastaID = parentNode.fileID;
                 child.links = [];
-                //console.log(parentdict[child.fastaID],child.fileID)
-                //console.log(parentdict[child.NewFasta], parentdict[child.OldFasta])
                 //a bit too nested for my taste
                 let link = this._creatRearrangmentLink(obj[j], child);
                 child.links.push(link);
@@ -238,9 +234,7 @@ export class FileDatabase {
         }
       } 
       for (let file of this.allNodes){
-        if (file.format === 'fasta'){/*console.log(file.links);console.log(file.fileName, file.fileID)*/}
         if (file.format === 'rearrangment'){
-          //console.log(file.OldFasta, file.NewFasta)
           //could change to commit name rather than fasta name
           file.fileName = (file.OldFasta === file.fastaID) ? "Link: " + parentdict[file.NewFasta] : "Link: " + parentdict[file.OldFasta]
         }
@@ -248,7 +242,7 @@ export class FileDatabase {
           file.fileName = (file.OldFasta === file.fastaID) ? "InDelSNP: " + parentdict[file.NewFasta] : "InDelSNP: " + parentdict[file.OldFasta]
         }
       }
-    } console.log(m)
+    }
     this.dataChange.next(this.nodes);
 
   }
