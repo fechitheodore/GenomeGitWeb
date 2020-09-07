@@ -1,0 +1,12 @@
+{ 
+    "_id" : ObjectId("5ab6b1c6d26ebc284659b803"), 
+    "title" : "test", 
+    "description" : null, 
+    "files" : [
+        ObjectId("5ab6b3909bec922c95cd3cba"), 
+        ObjectId("5ab7c7cf86c0b818cb7d7278")
+    ], 
+    "users" : [
+        ObjectId("5a9ae9cb8f80d14ad66675f6")
+    ]
+}

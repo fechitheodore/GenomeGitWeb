@@ -1,0 +1,21 @@
+:host {
+  height: 100vh;
+  width: 20vw;
+  /* z-index: 1000; */
+}
+
+mat-form-field {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+form {
+  text-align: center;
+  margin-top: 30px;
+}
+
+p-message {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+}

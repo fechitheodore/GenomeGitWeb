@@ -1,0 +1,62 @@
+:root{
+  --header-footer: #24292e;
+  --accent: #6cc644;
+  --background: #eae7ed;
+  --homelogo: #ffffff;
+  --genomeGitWeb: #80c962;
+  --menuItems: #ffffff;
+  --signIn: #ffffff;
+  --foreground: #f6f8fa;
+  --textLight: #ffffff;
+  --textDark: #24292e;
+  --textDarkUnfocused: #889aad;
+  --button-hover: #596470;
+  --shadow: 0 1px 5px rgba(100, 100, 100, 0.5);
+  --searchbarShadow: 0 1px 5px rgba(0, 255, 0, 1);
+  --searchbarShadowHover: 0 1px 15px rgba(0, 255, 0, 1);
+  --searchbarShadowHoverInside: inset 1px 15px rgba(0, 255, 0, 1);
+  --logos: #5f5f5f;
+  --footerText: #80c962;
+  }
+
+.example-form {
+  min-width: 150px;
+  /* max-width: 1000px; */
+  /* width: 100%; */
+  margin: 1rem;
+  font-size: 2rem;
+ 
+}
+
+.example-full-width {
+  width: 100%;
+  
+}
+
+.explore{
+  display: block;
+  padding: 6vh 20vw;
+align-content: center;
+margin-top: 3rem;
+}
+
+#search-box{
+  /* width: 80%; */
+  grid-area: searchbar;
+  border: none;
+  height: 2rem;
+  box-shadow: var(--searchbarShadow);
+  padding: 1.75vh 2vw;
+  outline: none;
+  /* margin: 4vh 0vw 0vh 0vw; */
+  /* font-size: 10px; */
+  /* border-radius: 0.5rem; */
+}
+
+#search-box:hover{
+  box-shadow: var(--searchbarShadowHover);
+}
+
+#search-box:focus{
+  box-shadow: var(--searchbarShadowHover);
+}

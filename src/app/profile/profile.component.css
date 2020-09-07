@@ -1,0 +1,328 @@
+:root {
+  --header-footer: #24292e;
+  --accent: #a2e785;
+  --background: #eae7ed;
+  --homelogo: #ffffff;
+  --genomeGitWeb: #80c962;
+  --menuItems: #ffffff;
+  --signIn: #ffffff;
+  --foreground: #f6f8fa;
+  --textLight: #ffffff;
+  --textDark: #24292e;
+  --textDarkUnfocused: #889aad;
+  --button-hover: #596470;
+  --shadow: 0 1px 5px rgba(100, 100, 100, 0.5);
+  --searchbarShadow: 0 1px 5px rgba(0, 255, 0, 1);
+  --searchbarShadowHover: 0 1px 15px rgba(0, 255, 0, 1);
+  --searchbarShadowHoverInside: inset 1px 15px rgba(0, 255, 0, 1);
+  --logos: #5f5f5f;
+  --footerText: #80c962;
+}
+
+table {
+  margin: 2.5%;
+  border-radius: 4px;
+}
+
+tr{
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover{
+  background-color: lightgray;
+}
+
+
+td {
+  padding: 10px;
+}
+th {
+  padding: 10px;
+}
+#project-headers {
+  /* display: grid; */
+  /* grid-template-columns: 50% 50%; */
+  border-bottom: 1px solid lightgrey;
+  height: 4.9rem;
+  text-align: center;
+  padding-left: 0;
+  padding-top: 1.5vh;
+  /* font-weight: bold; */
+  color: gray;
+  background-color: rgb(250, 251, 250);
+}
+
+.projects {
+  height: 100%;
+  width: 25%;
+  position: fixed;
+  /* z-index: 1; */
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  /* padding-top: 10px; */
+  border-right: 1px solid lightgrey;
+  margin-top: 6rem;
+}
+/* .project-list:focus {
+      color: aqua;
+  } */
+.project-list:hover {
+  cursor: pointer;
+}
+
+.project-list {
+  color: black;
+  /* margin-right: 6rem; */
+  color: rgb(72, 159, 240);
+}
+.privacy {
+  float: right;
+  padding-right: 15px;
+}
+
+.rightside-box {
+  width: 75%;
+  float: right;
+  overflow: hidden;
+  /* height: 100%; */
+  /* background: rgb(241, 248, 250); */
+  background: rgb(246, 248, 250);
+  position: absolute;
+  top: 0;
+  /* bottom: 0; */
+  margin-left: 25%;
+  margin-top: 6rem;
+}
+
+.files-div {
+  height: 100%;
+  /* margin-left: 35%; */
+}
+
+.files-table {
+  border-collapse: collapse;
+  width: 95%;
+  border: 1px solid lightgrey;
+  background: white;
+}
+thead {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: rgb(241, 248, 254);
+  color: black;
+  border: 1px solid lightblue;
+  padding: 8px;
+}
+
+.fixed-or-not{
+  float: left;
+}
+
+.format {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  color: rgb(88, 96, 104);
+}
+
+.file-name {
+  /* border: 1px solid #ddd; */
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  color: rgb(11, 88, 161);
+}
+
+.table-row:nth-child(even) {
+  background-color: rgb(255, 255, 255);
+}
+
+.table-row:hover {
+  background-color: rgb(237, 239, 241);
+}
+
+.issues-table {
+  width: 95%;
+  border-collapse: collapse;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  background: white;
+}
+
+.issues-list {
+  border-bottom: 1px solid #ddd;
+}
+
+.description {
+  color: rgb(88, 96, 104);
+  margin-left: 2.5%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.noDescriptionForm{
+  width: 95%;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  margin-left: 2.5%;
+  padding: 3rem;
+  /* height: 21rem; */
+  padding-bottom: 7.5rem;
+  background: white;
+}
+
+.editDescription {
+  /* margin: 0px; */
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  height: 9rem;
+}
+
+.material-icons {
+  cursor: pointer;
+}
+
+.description-button {
+  /* margin: 1rem 3rem; */
+  float: right;
+  margin-top: 2rem;
+  background: var(--genomeGitWeb);
+}
+
+.new-issue {
+  /* margin-top: 20px; */
+  /* width: 95%; */
+  width: calc(100% - 4rem);
+  border: 1px solid lightgrey;
+  margin-left: 2.5%;
+  border-radius: 4px;
+  /* height: 40px; */
+  align-content: flex-end;
+  background: white;
+}
+
+
+.new-issue-p {
+  /* padding: 20px; */
+  margin-left: 30px;
+  margin-top: 20px;
+  color: gray;
+}
+
+mat-form-field {
+  /* margin: 5rem 2rem 2rem 2rem; */
+  width: calc(100% - 4rem);
+  /* width: 100%; */
+}
+
+.example-form{
+  margin: 5rem 2rem 2rem 2rem;
+}
+
+#project-privacy {
+  padding-left: 34%;
+}
+
+.issue-comment {
+  margin: 2rem;
+  margin-top: 0;
+  width: calc(100% - 4rem);
+  min-height: 100px;
+  border-radius: 4px;
+  border: 1px solid lightgray;
+}
+
+.issue-button {
+  margin: 2rem;
+  margin-top: 0;
+  width: 15%;
+  margin-left: calc(85% - 2rem);
+  background: var(--genomeGitWeb);
+  color: white;
+}
+
+.solved-button{
+  font-size:17px;
+  background: var(--genomeGitWeb);
+  color: white;
+}
+
+.radio-group {
+  border: 1px solid lightgray;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  margin: 2.5%;
+  width: 95%;
+  border-radius: 4px;
+  background: white;
+}
+
+.subhead {
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 16px;
+}
+
+.subhead-heading {
+  font-size: 20px;
+}
+
+::ng-deep
+  .mat-radio-button.mat-accent.mat-radio-checked
+  .mat-radio-outer-circle {
+  border-color: var(--genomeGitWeb);
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-inner-circle {
+  color: rgb(66, 134, 244);
+  background-color: var(--genomeGitWeb);
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: rgb(255, 37, 37, 0.26);
+}
+
+.collab-table {
+  width: 95%;
+  border-collapse: collapse;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  z-index: 0;
+  background: white;
+}
+
+.collab-form {
+  /* margin: 2rem; */
+  width: 95%;
+  border-radius: 4px;
+  border: solid 1px lightgray;
+  padding-left: 2rem;
+  margin: 2.5%;
+  display: grid;
+  grid-template-columns: 80% 20%;
+  align-items: center;
+  background: white;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  /* background: red; */
+  width: 100%;
+  margin-left:20px;
+  margin-top: 15px;
+  /* margin-bottom: 10px; */
+}
+.collab-button {
+  background: var(--genomeGitWeb);
+  float: right;
+  /* margin: 15%; */
+  height: 40px;
+  width: 130px;
+  margin-left: 10px;
+}
+
+::ng-deep .rightside-box .mat-tab-list .mat-tab-labels {
+  background-color: rgb(250, 251, 250);
+}

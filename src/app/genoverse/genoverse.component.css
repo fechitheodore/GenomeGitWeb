@@ -1,0 +1,17 @@
+#genoverse{
+  padding: 0;
+}
+
+p-sidebar{
+  height:400px;
+}
+
+p-sidebar >>> .ui-sidebar-close{
+  display: none;
+}
+
+p-sidebar >>> .ui-sidebar{
+  padding: 0;
+  height: auto;
+  z-index: 1100;
+}

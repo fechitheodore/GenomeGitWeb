@@ -1,0 +1,20 @@
+#tableAdditionalColumns{
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+#tableAdditionalColumns td{
+  padding-bottom: 20px;
+}
+
+.columnTableDropdown{
+  text-align: center;
+}
+
+
+.linkFormatColumns{
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 20px;
+  max-width: 50%;
+}

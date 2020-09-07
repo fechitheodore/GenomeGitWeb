@@ -1,0 +1,111 @@
+:host{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#circosControlDiv{
+  /* padding-top: 30px; */
+}
+
+.ui-float-label{
+  display: inline-block;
+}
+
+:host >>> .ui-picklist-target-controls{
+  visibility: hidden;
+}
+
+:host >>> .ui-picklist-source-controls{
+  visibility: hidden;
+}
+
+.groupFile{
+  word-wrap: break-word;
+}
+
+
+.tracksContainer > div,
+.gu-mirror {
+  margin: 10px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: opacity 0.4s ease-in-out;
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.tracksContainer > div {
+  cursor: move;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+
+
+.my-legend {
+  margin: auto;
+  width: 100%;
+  right:0;
+  word-break: break-all;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.my-legend .legend-title {
+  text-align: center;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 90%;
+}
+
+.my-legend .legend-scale ul {
+  text-align: center;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  padding: 0;
+  list-style: none;
+}
+
+.my-legend .legend-scale ul li {
+  font-size: 80%;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  list-style: none;
+  margin-left: 0;
+  line-height: 18px;
+}
+
+.my-legend ul.legend-labels li span {
+  align: center;
+  display: block;
+  height: 16px;
+  width: 30px;
+  margin-right: auto;
+  margin-left: auto;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border: 1px solid #999;
+}
+img{
+  margin-left: 10px;
+}
+legend {
+  display: block;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: none;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  margin-left: 15px;
+}
+
+.my-legend .legend-source {
+  font-size: 70%;
+  color: #999;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  clear: both;
+}
+
+.my-legend a {
+  color: #777;
+}
+
+::ng-deep .ui-accordion .ui-accordion-header a {
+  background: #f6f7f9;
+}

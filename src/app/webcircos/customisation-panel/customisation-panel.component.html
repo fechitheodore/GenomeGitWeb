@@ -1,0 +1,41 @@
+<p-sidebar [(visible)]="isCustomisationClicked" position="right">
+
+  <h2> Customisation Panel </h2>
+
+
+<p-panel header="Regional Options">
+  <!--<br><p-radioButton name="regions" label="Highlight Genes" value="genes" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('genes')" [disabled]="(genesPresent===true)? true : false"></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight Promoters" value="promoters" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('promoters')" [disabled]="(promotersPresent===true)? true : false"></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight TF Binding Sites" value="TF_binding_sites" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('TF_binding_sites')" [disabled]="(TF_binding_sitesPresent===true)? true : false"></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight enhancers" value="enhancers" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('enhancers')" [disabled]="(enhancersPresent===true)? true : false"></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight tRNAs" value="tRNAs" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('tRNAs')" [disabled]="(tRNAsPresent===true)? true : false"></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight Operons" value="operons" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('operons')" [disabled]="(operonsPresent===true)? true : false"></p-radioButton>-->
+
+
+  <br><p-radioButton name="regions" label="Highlight Genes" value="genes" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('genes')" ></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight Promoters" value="promoters" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('promoters')" ></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight TF Binding Sites" value="TF_binding_sites" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('TF_binding_sites')" ></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight enhancers" value="enhancers" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('enhancers')" ></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight tRNAs" value="tRNAs" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('tRNAs')" ></p-radioButton>
+  <br><p-radioButton name="regions" label="Highlight Operons" value="operons" [(ngModel)]="highlightedRegion" (onClick)="whatToHighlight('operons')" ></p-radioButton>
+
+
+
+  <br>
+  <br>
+</p-panel>
+
+
+
+<p-panel header="VCF Options">
+  <h4> Choose a VCF graph type: </h4>
+    <p-radioButton label="Line Graph" name="graphType" value="lineGraph" (onClick)="vcfGraphType('lineGraph')"></p-radioButton>
+    <br><p-radioButton label="Histogram" name="graphType" value="histogram"  (onClick)="vcfGraphType('histogram')"></p-radioButton>
+
+    <h4> Homozygous/Heterzoygous SNPs View: </h4>
+    <p-checkbox name="SNPs" label="Display Homozygous SNPs" value="val1" [(ngModel)]="SNPs" (onChange)="changeOnlyHomoSNP($event)" [(ngModel)]="checkboxesDisplayArcs"></p-checkbox>
+
+</p-panel>
+
+
+</p-sidebar>

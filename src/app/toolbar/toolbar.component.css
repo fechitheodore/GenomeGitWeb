@@ -1,0 +1,143 @@
+:root{
+  --header-footer: #24292e;
+  --accent: #a2e785;
+  --background: #eae7ed;
+  --homelogo: #ffffff;
+  --genomeGitWeb: #80c962;
+  --menuItems: #ffffff;
+  --signIn: #ffffff;
+  --foreground: #f6f8fa;
+  --textLight: #ffffff;
+  --textDark: #24292e;
+  --textDarkUnfocused: #889aad;
+  --button-hover: #596470;
+  --shadow: 0 1px 5px rgba(100, 100, 100, 0.5);
+  --searchbarShadow: 0 1px 5px rgba(0, 255, 0, 1);
+  --searchbarShadowHover: 0 1px 15px rgba(0, 255, 0, 1);
+  --searchbarShadowHoverInside: inset 1px 15px rgba(0, 255, 0, 1);
+  --logos: #5f5f5f;
+  --footerText: #80c962;
+  }
+
+:host {
+  width: 100%;
+  height: 50px;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.navbar.navbar-default.navbar-fixed-top{
+ background: var(--header-footer);
+ border-left: solid var(--accent) 0.7vw;
+ /* margin-bottom: 1rem; */
+}
+
+.navbar-default.navbar-brand{
+  color: var(--accent);
+}
+
+.navbar-default.navbar-brand:hover{
+  color: white;
+}
+
+.container{
+  padding: 0;
+}
+
+.container:hover{
+  color: white;
+  cursor: pointer;
+}
+
+.container, fa:hover{
+  color: white;
+}
+
+.container,
+i {
+  display: inline-block;
+  vertical-align: middle;
+  width: auto;
+  color: white;
+}
+
+#barsToogle {
+  /* margin-left: 25px; */
+  color: white;
+  cursor: pointer;
+}
+
+h3 {
+  margin: 0;
+}
+
+#signedDiv,
+#signDiv {
+  display: inline-block;
+  vertical-align: centre;
+  text-align: right;
+  padding-right: 25px;
+  float: right;
+  padding-top: 1rem;
+}
+
+span {
+  color: white;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: x-large;
+}
+
+#signout {
+  color: white;
+  cursor: pointer;
+}
+
+#home {
+  font-size: 3rem;
+  color: white;
+  cursor: pointer;
+  float: left;
+  padding: 1rem 1rem;
+}
+
+a {
+  cursor: pointer;
+}
+
+.navbar-log {
+  float: right;
+}
+
+.dropdown-caret {
+  /* background: lightcoral; */
+  font-size: 1rem;
+  border-bottom: 0 solid transparent;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top-style: solid;
+  border-top-width: 4px;
+  content: "";
+  display: inline-block;
+  height: 0;
+  vertical-align: middle;
+  width: 0;
+}
+
+.username{
+  font-size: 1.8rem;
+  border: inset lightgreen;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.circos{
+  font-size: 1.8rem;
+  border: inset lightgreen;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.username:hover{
+color: lightgreen;
+}

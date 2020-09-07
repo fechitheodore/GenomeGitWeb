@@ -1,0 +1,195 @@
+<p-dialog id="confirmD" header="Fasta file (.fasta/.fa)" [(visible)]="displayFastainfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/FastaFormat.png" width="778" height="200">
+  <li> <b>The genome chromosome by chromosome</b> </li>
+  <li> The file should contain the chromosomes / regions in an organism followed by their nucleotide sequence.</li>
+  <li> The file should contain the chromosome name after the ">" symbol, before each sequence.</li>
+  <li> Each line of the sequence needs to have the same amount of characters apart from the last row.</li>
+  <li> Do not upload resutls with contigs and scaffolds.</li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayFastainfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="File tab information" [(visible)]="displayFileInfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span><b>Files panel description</b></span>
+  <img src="image/files.png" width="766" height="300">
+  <p-footer>
+      <button type="button" pButton icon="pi pi-times" (click)="displayFileInfo=false" label="OK"></button>
+    </p-footer>
+</p-dialog>
+
+
+<p-dialog header="Variant Calling (.VCF)" [(visible)]="displayVCFinfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/vcf_format.png" width="666" height="104">
+  <li><b>SNPs found in each chromosome</b></li>
+  <li> The file should contain the chromosome name in the first column, the position of the SNP in the second and the quality score in the sixth. If the Allelic Depth identifier (AD) is present on column 9, the homozygousity is calculated as the allele specific
+    depth divided by the sum of reference and alternative allelic depth for this SNP. The number is then normalized between 0 and 1. </li>
+  <li> The chromosome name should be the same as the one in the fasta file </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayVCFinfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Annotation file (.gff3/.gtf/.gff2/.gff) " [(visible)]="displayGFFinfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/gffformat.png" width="846" height="134">
+  <li><b>Information concerning the sequence</b></li>
+  <li> The file should contain the chromosome name in the first column, the start position and end positions of the region in columns 4 and 5 respectively.The annotation name is retrieved from the ninth column the after the "ID=" marker. The name can contain
+    letters, numbers and "_-:.". The parser will only upload lines marked as "gene", "exon" or "intron" in the third column.</li>
+  <li> The chromosome name should be the same as the one in the fasta file </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayGFFinfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Transcriptomic Coverage file from SAMTools pipeline (.bed/.bedcov) " [(visible)]="displayBedinfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/bedformat.png" width="690" height="186">
+  <li><b>Tanscriptomic Coverage from RNA SEQ: The number of reads that cover a certain region of the sequence</b></li>
+  <li> The file should contain the chromosome name in the first column, the start position and end positions of the region in columns 2 and 3 respectively and in the forth column quality score calculated</li>
+  <li> The genes names must match your annotation (.gff/.gff3/.gtf) file </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayBedinfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Differential Expression (.diff/.de.txt)" [(visible)]="displayDiffinfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format 1: Cuffdiff (.diff) </b> </span>
+  <img src="image/diff_format.png" width="1069" height="144">
+  <li><b>The differential expression found in an RNA SEQ experiment from  Cuffdiff output (gene_exp.diff).</b></li>
+  <li> The file should contain the chromosome name in the first column, information about the region in the second one, the start and end position of the region seperated from the name of the chromosome with the ":" in the third column (Check image above)
+    and lastly in the tenth column the log Fold Change</li>
+  <span> <b>Accepted format 2: EBSeq (.de.txt)</b> </span>
+  <img src="image/de_format.png" width="876" height="76">
+  <li><b>The differential expression found in an RNA SEQ experiment from EBSeq output (GeneMat.de.txt).</b></li>
+  <li> The file should contain the chromosome name in the first column, and lastly in the fifth column the Real Fold Change. </li>
+  <li> Before uploading this format, you need to have uploaded an annotation file containing matching genes </li>
+  <li> The chromosome name should be the same as the one in the fasta file </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayDiffinfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Bam - Bai " [(visible)]="displayBaminfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/bam_format.png" width="940" height="118">
+  <li><b> The Genomic Coverage : The number of reads that cover a certain region of the sequence. </b></li>
+  <li> To display genomic coverage, you must FIRST upload an index file (.bai) and then upload the actual alignment file (.bam) containing reads mapped to chromosomes </li>
+  <li> The displayed coverage is an estimation of the actual coverage (.bam.iobio.js library) </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayBaminfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Expression " [(visible)]="displayExpressioninfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <span> <b>Accepted format</b> </span>
+  <img src="image/expression_format.png" width="940" height="118">
+  <li><b> The Expression corresponds to the abundance of your transcript/isoform that cover a certain region of the sequence expressed in Transcript Per Million </b></li>
+  <li> To display expression, you must upload a .results file from RSEM output. (either isoform.results or genes.results) </li>
+  <li> The genes names must match your annotation file (.gff/.gff3/.gtf) </li>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayExpressioninfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog header="Add a project" [(visible)]="addProjectDialogVisible">
+  <label for="newTitleInput">Title:</label><br />
+  <input id="newTitleInput" type="text" size="30" pInputText [(ngModel)]="newProjectTitle"><br />
+  <mat-slide-toggle [(ngModel)]="public">Public</mat-slide-toggle><br>
+
+  <label for="newDescriptionArea">Description:</label><br />
+  <textarea id="newDescriptionArea" pInputTextarea [(ngModel)]="newProjectDescription"></textarea><br />
+  <p-button label="Create" (onClick)="projectPanel.addProject(newProjectTitle, public, newProjectDescription);addProjectDialogVisible=false;"></p-button>
+  <p-button label="Cancel" (onClick)="projectPanel.cancelNewProject()"></p-button>
+
+</p-dialog>
+
+
+
+<p-confirmDialog *ngIf="projectPanel" header="Confirmation" [(visible)]="showFastaParam" icon="fa fa-question-circle" width="50%" margin-top="100" closable="false" closeOnEscape="false" #cd>
+
+  <p-footer>
+
+    Input the beginning of the chromosome signature :
+    <br><input #beginsInput type="text" pInputText [(ngModel)]="projectPanel.chromosomeSignature.begins" />
+    <br>Input the end of the chromosome signature :
+    <br><input #endsInput type="text" pInputText [(ngModel)]="projectPanel.chromosomeSignature.ends" />
+
+    <br>
+    <br><button type="button" pButton icon="fa-tags" label="Default" (click)="defaultFasta()"></button>
+    <button type="button" pButton icon="fa-check" label="Confirm" (click)="accept()"></button>
+  </p-footer>
+</p-confirmDialog>
+
+<app-link-table #linkTable (updateLinksDisplayed)="projectPanel.onLinksUpdate($event)"></app-link-table>
+
+
+
+<!----------- Dialog shown when the user uploads a links file and there are additional columns-->
+<p-dialog header="Select the type of the additional columns" [(visible)]="displayAddColumnTypesLink">
+  <table id="tableAdditionalColumns">
+    <tr *ngFor="let column of additionalLinkColumns">
+      <td> {{column.name}}</td>
+      <td class="columnTableDropdown">
+        <p-dropdown [options]="linkTypes" [(ngModel)]="column.selectedType"></p-dropdown>
+      </td>
+    </tr>
+  </table>
+  <p-button label="Confirm" (onClick)="confirmLinksType();displayAddColumnTypesLink=false;"></p-button>
+
+</p-dialog>
+
+
+
+<!-------- Information dialog for the link files format -->
+
+<p-dialog header="Link file" [(visible)]="displayLinkInfo" modal="modal" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+
+  <img src="image/linkFileExample.png">
+  <h3>Information concerning the format</h3>
+  <li>The file must be a comma separated values text file. A file can be used to display links among a single group or between different groups.</li>
+  <div>
+    <div class="linkFormatColumns">
+      For a single group, the file should have the following columns:
+      <ul>
+        <li>g1chr: ID of the first chromosome</li>
+        <li>g1start: start position on the first chromosome</li>
+        <li>g1end: end position on the first chromosome</li>
+        <li>g2chr: ID of the second chromosome</li>
+        <li>g2start: start position on the second chromosome</li>
+        <li>g2end: end position on the second chromosome</li>
+        <li>color: link color in hexadecimal format (ex: #FF0000)</li>
+        <li>fusion: text to display in the tooltip when putting the mouse over the link</li>
+      </ul>
+    </div>
+    <div class="linkFormatColumns">
+      For multiple groups, the file should have the following columns:
+      <ul>
+        <li>g1: name of tthe first group</li>
+        <li>g1chr: ID of the first chromosome</li>
+        <li>g1start: start position on the first chromosome</li>
+        <li>g1end: end position on the first chromosome</li>
+        <li>g2: name of the second group</li>
+        <li>g2chr: ID of the second chromosome</li>
+        <li>g2start: start position on the second chromosome</li>
+        <li>g2end: end position on the second chromosome</li>
+        <li>color: link color in hexadecimal format (ex: #FF0000)</li>
+        <li>fusion: text to display in the tooltip when putting the mouse over the link</li>
+      </ul>
+    </div>
+  </div>
+  <p>Additional columns can be added. They should be added after the other columns (see example.)</p>
+  <p>An example of valid file for the single group can be downloaded <a style="color:#337ab7;" href="files/exampleLinkSingle.txt">here</a> and a valid file for multiple groups can be downloaded <a style="color:#337ab7;" href="files/exampleLinkMultiple.txt">here</a></p>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-times" (click)="displayLinkInfo=false" label="OK"></button>
+  </p-footer>
+</p-dialog>
+
+
+
+<share-dialog #sharedialog></share-dialog>
+
+<app-import-dialog #importdialog></app-import-dialog>

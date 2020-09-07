@@ -1,0 +1,117 @@
+<div #circosControlDiv *ngIf="userService.selectedProject||!userService.getIsSignedIn()" id="circosControlDiv">
+    <p-panel header="Controls">
+  <p-accordion [multiple]="true">
+
+    <p-accordionTab header="Legend" [selected]="true">
+      <div *ngIf="legendBooleans.fastaChrBoolean" class='my-legend'>
+        <fieldset>
+          <div class='legend-scale'>
+            <ul class='legend-labels'>
+              <div *ngIf="legendBooleans.annotChrBoolean" class='annot'>
+                <li style='font-weight:bold'> Annotation Track </li>
+                <li>
+                  <div>Coding Region</div><span style='background:blue;'></span></li>
+                <li>
+                  <div>Non Coding Region</div><span style='background:orange;'></span></li>
+              </div>
+              <div *ngIf="showLinksLegend" class='annot' style="margin-top: 10px">
+                <li style='font-weight:bold'> Link </li>
+                <li>
+                  <div>Insertion</div><span style='background:#00ff00;'></span></li>
+                <li>
+                  <div>Deletion</div><span style='background:red;'></span></li>
+                  <li>
+                    <div>SNP</div><span style='background:blue;'></span>
+                  </li>
+              </div>
+              <div *ngIf="legendBooleans.diffChrBoolean" class='diffExp'>
+                <li style='font-weight:bold'>Differential Expression Track </li>
+                <li>
+                  <div>Under expressed Regions</div><span style='background:red;'></span></li>
+                <li>
+                  <div>Over expressed Regions</div><span style='background:#00CD00;'></span> </li>
+                <li>
+                  <div>Equally expressed Regions</div><span style='background:yellow;'></span> </li>
+              </div>
+              <div *ngIf="legendBooleans.genomCovBoolean" class='genomicCov'>
+                <li style='font-weight:bold'>Genomic Coverage Track (nucleotides/region) </li>
+                <li><img src="image/genomicCovLegend.png" width="30" height="16" border="1"></li>
+              </div>
+              <div *ngIf="legendBooleans.vcfChrBoolean" class='vcf'>
+                <li style='font-weight:bold'>SNP Density Track (SNPs/region) [Heterzoygous/Homozygous]</li>
+                <li><img src="image/vcfLegend.png" width="30" height="16" border="1"><img src="image/vcfLegend2.png" width="30" height="16" border="1"></li>
+              </div>
+              <div *ngIf="legendBooleans.transcriptomicCov" class='vcf'>
+                <li style='font-weight:bold'>Transcriptomic Coverage (nucleotides/region) </li>
+                <li><img src="image/transcriptomicCovLegend.png" width="30" height="16" border="1"></li>
+              </div>
+              <div *ngIf="legendBooleans.expressionBoolean" class='vcf'>
+                <li style='font-weight:bold'>Transcriptomic Coverage (nucleotides/region) </li>
+                <li><img src="image/expressionLegend.png" width="30" height="16" border="1"></li>
+              </div>
+              <div *ngIf="legendBooleans.snpLinkBoolean" class='vcf'>
+                <li style='font-weight:bold'>Regions with SNP density higher than {{snpTreshhold}}% [Heterzoygous/Homozygous]</li>
+                <li><img src="image/snpLinkLegend.png" width="30" height="16" border="1"> <img #imgs src="image/snpLinkLegend2.png" width="30" height="16" border="1"></li>
+              </div>
+              <div>
+                <li style='font-weight:bold'>Scale</li>
+                <li>1 tick = {{tickLength}} bp</li>
+              </div>
+            </ul>
+          </div>
+        </fieldset>
+      </div>
+
+    </p-accordionTab>
+
+
+    <p-accordionTab header="Groups selection" [selected]="true">
+        <div *ngFor="let group of groups">
+          <p-checkbox name="group" value="{{group.name}}" label="{{group.name}}" [(ngModel)]="selectedGroups" [disabled]="group.items.length==0" (onChange)="changeCheckBoxes(group, $event)"></p-checkbox>
+        </div>
+      </p-accordionTab>
+
+
+      <p-accordionTab  *ngFor='let group of groups; let i = index;' header='{{group.name}}' [selected]="group.name=='Group 1'" >
+
+        <div class='tracksContainer' [dragula]='group.name' [dragulaModel]="group.items">
+          <div class='placeholder' style="background-color:transparent;" *ngIf='!group.items.length'>Add items to me!</div>
+          <div *ngFor='let item of group.items' class="groupFile">
+            {{item.name}}
+          </div>
+        </div>
+        <p-dropdown *ngIf="(group.items.length>0 && group.isChecked && group.isGenomeViewLoaded) || group.name=='Group 1'" [options]="group.chromosomes" [(ngModel)]="group.selectedChromosome" optionLabel="id" editable="false" pTooltip="Select Chromosome" (onChange)="selectChromosome(i)"></p-dropdown>
+
+        <!-- <nouislider *ngIf="group.chromosomeSelected && group.selectedChromosome.id!='All' && group.isChecked" #slider [min]="group.selectedChromosome.start" [max]="group.selectedChromosome.end" [step]="1" [(ngModel)]="group.range" [tooltips]="[ true, true ]"
+          (end)="zoomIn(i)" style="margin-top: 4em;" [format]="sliderFormat"></nouislider> -->
+
+      </p-accordionTab >
+
+
+  </p-accordion>
+  </p-panel>
+
+
+</div>
+
+
+
+<div #circosControlDiv2 id="circosControlDiv2">
+  <p-sidebar [(visible)]="isNewGroupAdded" position="bottom" styleClass="ui-sidebar-md" blockScroll="true" [modal]="false">
+    <p-pickList [source]="pickListSourceArray" [target]="pickListTargetArray" [responsive]="true" sourceHeader="List of Uploaded Files" targetHeader="Files in this Group"
+     (onMoveToTarget)="onMoveToTarget($event)" (onMoveAllToTarget)="onMoveToTarget($event)"
+      (onMoveToSource)="onMoveToSource($event)" (onMoveAllToSource)="onMoveToSource($event)">
+      <ng-template let-file pTemplate="item">
+        <div class="ui-helper-clearfix">
+          <div style="font-size:14px;display:inline-block;margin:15px 5px 0 0">{{file.format}}</div>
+          <div style="font-size:14px;float:right;margin:15px 5px 0 0">{{file.name}}</div>
+        </div>
+      </ng-template>
+    </p-pickList>
+
+
+    <button pButton type="button" (click)="isNewGroupAdded = false" label="Save" class="ui-button-success"></button>
+    <button pButton type="button" (click)="isNewGroupAdded = false" label="Cancel" class="ui-button-secondary"></button>
+  </p-sidebar>
+
+</div>

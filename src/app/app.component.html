@@ -1,0 +1,17 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+<div #root [hidden]="!triedCookies">
+  <div id="page-container">
+    <div id="content-wrap">
+      <app-toolbar #toolbar (clicked)="onToolarClick($event)" (signOut)="onSignOut()" (toogleEvent)="toogle()">
+      </app-toolbar>
+      <sign-panel #signPanel (signedIn)="onSignIn()" (clicked)="onPanelClick($event)"></sign-panel>
+      <router-outlet #router (activate)="onActivate($event)"></router-outlet>
+    </div>
+    <!-- <footer id="footer">
+      <p>genomeGitWeb&copy; 2019</p>
+    </footer> -->
+  </div>
+</div>
+
+<p-growl></p-growl>

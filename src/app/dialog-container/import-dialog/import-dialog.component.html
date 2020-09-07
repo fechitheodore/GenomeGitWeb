@@ -1,0 +1,28 @@
+<p-dialog header="Import a file" [(visible)]="importDialogVisible" [responsive]="true" [width]="850" [minWidth]="300" [minY]="70">
+  <p-dropdown [(options)]="projectsListWithoutDisplayed" [(ngModel)]="selectedProjectForImport" optionLabel="title" editable="false" (onChange)="projectToImportChanged()"></p-dropdown>
+
+  <p-table [columns]="cols" [value]="importableFiles" selectionMode="multiple" [(selection)]="filesSelectedForImport">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th>
+          Name
+        </th>
+        <th>
+          Format
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-file let-columns="columns" let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="file" [pSelectableRowIndex]="rowIndex">
+        <td>
+          {{file.name}}
+        </td>
+        <td>
+          {{file.format}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-button label="Import" (onClick)="importFiles()"></p-button>
+</p-dialog>

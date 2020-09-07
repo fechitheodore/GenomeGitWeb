@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+<nav
+  class="navbar navbar-default navbar-fixed-top"
+>
+<i class="material-icons" id="barsToogle" title="Toggle Project Panel" (click)="toogle()" *ngIf="isOnApp">
+    more_vert
+    </i>
+  <!-- <fa
+    name="bars"
+    id="barsToogle"
+    id="signout"
+    pTooltip="Sign out"
+    size="2x"
+    (click)="toogle()"
+    *ngIf="isOnApp"
+  ></fa> -->
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header" style="float: left">
+      <!-- <fa
+        name="home"
+        id="home"
+        pTooltip="Sign out"
+        size="2x"
+        (click)="loadHome()"
+      ></fa> -->
+      <i class="material-icons" id="home" aria-setsize="2x" (click)="loadHome()">home</i>
+      <a class="navbar-brand" (click)="loadHome()">genomeGitWeb</a>
+    </div>
+  </div>
+  <ul
+    class="nav navbar-nav navbar-log"
+    *ngIf="!isSigned"
+    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;"
+  >
+    <li style="border-right: solid gray 1px">
+      <a (click)="signUpClicked()" style="font-size: 2rem; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Sign up</a>
+    </li>
+    <li >
+        <a (click)="signInClicked()" style="font-size: 2rem; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Sign in</a>
+      </li>
+  </ul>
+
+  <div *ngIf="isSigned" id="signedDiv">
+    <span class="circos" (click)="plotClicked()" title="Go to Visualisation page">Plot</span>
+    <span class="username" (click)="profileClicked()" title="Go to profile page">{{username}} <i class="fas fa-user-cog"></i></span>
+    <i class="fas fa-sign-out-alt" (click)="signOutClicked()" style="color: white; font-size: 2rem;" title="Log out"></i>
+  </div>
+</nav>

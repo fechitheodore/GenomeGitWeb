@@ -1,0 +1,986 @@
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { DragulaService } from 'ng2-dragula/ng2-dragula';
+import { FormsModule } from '@angular/forms'; // <-- NgModel lives here
+import { environment } from '../../../environments/environment';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { SelectItem } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { LoadingService } from '../../loading.service';
+import { UserService } from '../../user.service';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToastrService } from 'ngx-toastr';
+import { DisplaySettingsService } from '../../display-settings.service';
+import { FileNode } from '../project-panel/project-panel.component';
+import { CircosGroup } from '../biocircos/biocircos.component';
+
+// Chromosome object for the zoom
+class Chromosome {
+  id: any;
+  length: any;
+  start: any;
+  end: any;
+}
+
+interface PickListItems {
+  fasta: string;
+  annotation: string;
+  vcf: string;
+  geneExpression: string;
+  transcriptomicCov: string;
+  genomicCov: string;
+}
+
+
+@Component({
+  selector: 'circos-controls',
+  templateUrl: './circos-controls.component.html',
+  styleUrls: ['./circos-controls.component.css'],
+  providers: []
+})
+export class CircosControlsComponent implements OnInit {
+
+
+
+  isReorderingPerformed: boolean;
+  newGroupName: string;
+  groupNames = [];
+  // get selectedGroups(): string[] {
+  //   //if (!this.groups) {return undefined;}
+  //   //return this.groups.map(a => a.name);
+  //   return ["Group 1"]
+  // };
+
+  selectedGroups: string[];
+  zoomStart = 0;
+  chromosomeZoomed = '';
+  groups: Array<CircosGroup> = [
+
+  ];
+
+
+  @ViewChild('fileupload') fileupload;
+
+  isNewGroupAdded = false;
+  pickListTargetArray = [];
+  pickListSourceArray = [];
+  pickListMasterSourceArray = [];
+
+
+
+  transferingGroup: any = null;
+
+  order: Array<any> = [{ format: 'annotation' }, { format: 'DE' }, { format: 'vcf' },
+  { format: 'genomicCov' }, { format: 'transcriptomicCov' }, { format: 'expression' }];
+
+  sliderFormat = {
+    to: function (value) {
+      return Math.round(value / 1000) + 'k';
+    },
+    from: function (value) {
+      if (value.includes('k')) { // if we zoom from the slider
+        return parseInt(value.replace('k', '')) * 1000;
+      }
+      return parseInt(value); // if we zoom from the circos
+    }
+  }
+
+  legendBooleans: any = {};
+
+  @ViewChild('slider') slider;
+
+  @Output()
+  onChromosomeSelected = new EventEmitter<Chromosome>(); // emited when the user clicks on the button to select an element in the chromosome dropdown
+  @Output()
+  onRangeSelected = new EventEmitter<number[]>(); // emited when the user clicks on the button to select a region on the chromosome throught the slider
+  @Output()
+  onGroupAdded = new EventEmitter<string[]>();
+
+  @Output()
+  onReorder = new EventEmitter<any>();
+
+  @Output()
+  onReorderedChromosomeSelected = new EventEmitter<Chromosome>();
+
+  @Output()
+  onReorderedChrBoolean = new EventEmitter<Chromosome>();
+
+  @Output()
+  onDisplayGroups = new EventEmitter<any>();
+
+  @Output()
+  onShowAnnotationLink = new EventEmitter<Array<any>>();
+
+  @Output()
+  onDisplayGroup1 = new EventEmitter<any>();
+  @Output()
+  ClearMessage = new EventEmitter<any>();
+  @Output()
+  CreateMessage = new EventEmitter<any>();
+
+  constructor(private dragula: DragulaService, public userService: UserService, private http: HttpClient,
+    private loadingService: LoadingService, private toastr: ToastrService, private displaySettingsService: DisplaySettingsService) {
+  }
+
+
+  ngOnInit() {
+    // this.dragula.setOptions('Group 1', { removeOnSpill: false });
+
+    // this.dragula.out.subscribe((value) => {
+    //   this.onOut(value[0]);
+    // });
+    // this.groups.push({
+    //   name: 'Group 1', items: [], selectedChromosome: null, chromosomes: [], range: [0, 100], chromosomeSelected: false,
+    //   reverse: false, isGenomeViewLoaded: false, isChecked: false
+    // });
+  }
+
+  removeGroup(event, name) {
+    if (event.originalEvent.fromState !== 'void') {
+      for (let i = this.groups.length - 1; i >= 0; i--) {
+        if (this.groups[i].name === name) {
+          this.groups.splice(i, 1);
+          this.updateGroupNames();
+        }
+      }
+    }
+  }
+
+  addGroup(name) {
+    // if (name.length > 0) {
+    //   if (this.groups.length === 0) {
+    //     this.groups.push({
+    //       name: name, items: [], selectedChromosome: null, chromosomes: [], range: [0, 100], chromosomeSelected: false,
+    //       reverse: false, isGenomeViewLoaded: false, isChecked: false
+    //     });
+    //   } else {
+    //     this.groups.push({
+    //       name: name, items: [], selectedChromosome: null, chromosomes: [], range: [0, 100], chromosomeSelected: false,
+    //       reverse: true, isGenomeViewLoaded: false, isChecked: false
+    //     });
+    //   }
+    //   const groupIndexNewGroup = this.groups.length - 1;
+    //   this.pickListTargetArray = this.groups[groupIndexNewGroup].items;
+    //   this.transferingGroup = this.groups[groupIndexNewGroup];
+    //   this.newGroupName = '';
+    //   this.updateGroupNames();
+    //   this.callPickList();
+
+    //   this.dragula.setOptions(name, { removeOnSpill: true });
+    // }
+  }
+
+
+  //!!!!! NEW CODE
+  getGroupBins(fastaFileNode: FileNode, group: CircosGroup) {
+    const url = environment.host + 'getBins?files=' + JSON.stringify(fastaFileNode.selectedIDs);
+    this.http.get(url).subscribe((data: any) => {
+
+      let tracks = data.tracks;
+      let orderedTracks = [];
+
+      for (let i = 0; i < group.items.length; i++) {
+        for (let j = 0; j < tracks.length; j++) {
+
+          if (group.items[i].id === tracks[j].file) {
+            orderedTracks.push(tracks[j]);
+          }
+
+        }
+      }
+
+      data.tracks = orderedTracks;
+
+
+      //this.onDisplayGroup1.emit(data);app
+    });
+  }
+
+  updateGroup1(items: FileNode[]) {
+
+    this.groups = [];
+    this.groupNames = [];
+    this.selectedGroups = [];
+    let counter = 2;
+    for (let item of items) {
+      if (item.isFasta && item.isSelected) {
+        let newGroup = new CircosGroup;
+        this.getChromosomes(newGroup, item.fileID);
+        //newGroup.items=item.selectedItems;
+        newGroup.items = item.selectedItems.concat([item]);
+        //newGroup.items.push(item);
+        newGroup.name = "Group ".concat(counter.toString());
+        newGroup.isChecked = true;
+        newGroup.range = [0, 100];
+        this.groups.push(newGroup);
+        this.groupNames.push(newGroup.name);
+        this.selectedGroups.push(newGroup.name);
+        this.getGroupBins(item, newGroup);
+        counter++;
+        //break;
+      }
+    }
+    this.displaySettingsService.groupsChecked = this.selectedGroups;
+    this.getGroupsData();
+  }
+
+  //!!!!! END NEW CODE
+
+  // updateGroup1_old(data) {
+
+  //   this.groups[0].isChecked = true;
+
+  //   let orderedArray = [data[0]];
+  //   data.splice(0, 1);
+  //   let minIndex, firstTrackIndex;
+
+  //   // put the tracks in the right order
+  //   while (data.length > 0) {
+  //     minIndex = 100;
+  //     for (let i = 0; i < data.length; i++) {
+  //       for (let j = 0; j < this.order.length; j++) {
+  //         if (this.getFormatCategory(data[i].format) == this.order[j].format && j < minIndex) {
+  //           minIndex = j;
+  //           firstTrackIndex = i;
+  //         }
+  //       }
+  //     }
+  //     orderedArray.push(data[firstTrackIndex]);
+  //     data.splice(firstTrackIndex, 1);
+  //   }
+
+
+
+  //   this.groups[0].items = orderedArray;
+  //   //this.selectedGroups = ['Group 1'];
+  //   let group: CircosGroup = this.groups[0];
+
+  //   group.selectedChromosome = null;
+  //   group.chromosomeSelected = false;
+
+  //   let files = [];
+  //   for (let i = 0; i < group.items.length; i++) {
+  //     files.push(group.items[i].id);
+  //   }
+  //   let that = this;
+  //   group.isGenomeViewLoaded = true;
+
+
+  //   const url = environment.host + 'getBins?files=' + JSON.stringify(files);
+  //   this.http.get(url).subscribe((data: any) => {
+  //     let chromosomes = [{ id: 'All', length: null, start: 0, end: 100 }];
+  //     for (let i = 0; i < data.fasta.data.length; i++) {
+  //       chromosomes.push({ id: data.fasta.data[i][0], length: data.fasta.data[i][1], start: 0, end: data.fasta.data[i][1] - 1 });
+  //     }
+  //     group.chromosomes = chromosomes;
+
+  //     let tracks = data.tracks;
+  //     let orderedTracks = [];
+
+  //     for (let i = 0; i < group.items.length; i++) {
+  //       for (let j = 0; j < tracks.length; j++) {
+
+  //         if (group.items[i].id === tracks[j].file) {
+  //           orderedTracks.push(tracks[j]);
+  //         }
+
+  //       }
+  //     }
+
+  //     data.tracks = orderedTracks;
+
+
+  //     this.onDisplayGroup1.emit(data);
+  //   });
+  // }
+
+  updateGroupNames() {
+    this.groupNames = [];
+    for (let i in this.groups) {
+      this.groupNames.push(this.groups[i].name);
+    }
+    this.onGroupAdded.emit(this.groupNames);
+  }
+
+  overwriteMerge(destinationArray, sourceArray, options) {
+    return sourceArray;
+  }
+
+  setFileList(data) {
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].name === data[0].name) {
+        this.groups[i].items = this.groups[i].items.concat(data[0].items);
+        break;
+      }
+    }
+  }
+
+  catchPickListEmitted(e) {
+    this.pickListSourceArray = e;
+    this.pickListMasterSourceArray = JSON.parse(JSON.stringify(this.pickListSourceArray));
+
+
+
+  }
+
+  callPickList() {
+    this.isNewGroupAdded = true;
+    this.pickListSourceArray = this.pickListMasterSourceArray.filter(el => el.format == 'fasta'); // the user must first choose a fasta file for the group
+  }
+
+  deleteGroup(name) {
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].name === name) {
+        this.groups.splice(i, 1);
+        this.updateGroupNames();
+        break;
+      }
+    }
+  }
+
+  editGroup(name) {
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].name === name) {
+        this.pickListTargetArray = this.groups[i].items;
+        this.callPickList();
+        break;
+      }
+    }
+  }
+
+
+  private onOut(groupName) {
+    let items;
+    let group;
+
+
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].name === groupName) {
+        items = this.groups[i].items;
+        group = this.groups[i];
+        break;
+      }
+    }
+
+    if (items[0].format !== 'fasta') {
+      let itemToMove = items[0];
+      items.splice(0, 1);
+
+      let orderIndex; // find where to put the other file that will be replaced by the fasta
+      for (let i = 0; i < this.order.length; i++) {
+        if (this.order[i].format === this.getFormatCategory(itemToMove.format)) {
+          orderIndex = i;
+          break;
+        }
+      }
+      let otherOrderIndex;
+      let found = false;
+      for (let i = 1; i < items.length; i++) {
+        if (found) {
+          break;
+        }
+        for (let j = 0; j < this.order.length; j++) {
+          if (this.order[j].format === this.getFormatCategory(items[i].format)) {
+            if (j > orderIndex) {
+              otherOrderIndex = i;
+              items.splice(i, 0, itemToMove);
+              found = true;
+              break;
+            }
+          }
+        }
+      }
+      if (!found) {
+        items.push(itemToMove);
+      }
+
+
+      group.items = JSON.parse(JSON.stringify(items));
+
+    } else {
+
+      let newOrder = []; // get the new track order
+      for (let i = 1; i < items.length; i++) {
+        newOrder.push({ format: items[i].format, id: items[i].id });
+      }
+      let found = false;
+      for (let i = 0; i < this.order.length; i++) {
+        found = false;
+        for (let j = 0; j < newOrder.length; j++) {
+          if (this.order[i].format === newOrder[j].format) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          newOrder.push(this.order[i]);
+        }
+      }
+
+      this.order = newOrder;
+
+      if (groupName === 'Group 1' && this.selectedGroups.length === 1) {
+        this.onReorder.emit({ order: this.order, mode: 'single' });
+
+      } else {
+        this.onReorder.emit({ order: this.order, mode: 'comparison' });
+      }
+
+
+      const groupsSelected = [];
+      for (let i = 0; i < this.selectedGroups.length; i++) {
+        for (let j = 0; j < this.groups.length; j++) {
+          if (this.groups[j].name === this.selectedGroups[i] && this.groups[j].name !== groupName) {
+            groupsSelected.push(this.groups[j]);
+            break;
+          }
+        }
+      }
+      let group, tmp;
+      for (let i = 0; i < groupsSelected.length; i++) {
+        group = groupsSelected[i];
+        for (let j = 1; j < items.length; j++) {
+          for (let k = 1; k < group.items.length; k++) {
+            if (items[j].format === group.items[k].format) {
+              tmp = group.items[j];
+              group.items[j] = group.items[k];
+              group.items[k] = tmp;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  clear() {
+    // //this.selectedGroups = [];
+    // this.groupNames = [];
+    // this.groups = [{
+    //   name: 'Group 1', items: [], selectedChromosome: null, chromosomes: [], range: [0, 100], chromosomeSelected: false,
+    //   reverse: false, isGenomeViewLoaded: false, isChecked: false
+    // }];
+  }
+
+
+  getGroupsData() {
+    this.ClearMessage.emit();
+    this.CreateMessage.emit(['Select a chromosome for a zoomed view', 'Select Customization Panel to display more information']);
+
+    this.groups.forEach(function (group) {
+      group.chromosomeSelected = false;
+      group.selectedChromosome = null;
+    });
+
+    if (this.selectedGroups.length === 1 && this.selectedGroups[0] === 'Group 1') {
+      //obsolete
+      this.updateGroup1(this.groups[0].items);
+    } else {
+      if (this.chechGroup1Okay()) {
+        this.loadingService.isCharging = true;
+
+
+        let groupsToSend: Array<CircosGroup> = [];
+
+        for (let i = 0; i < this.selectedGroups.length; i++) {
+          for (let j = 0; j < this.groups.length; j++) {
+            if (this.selectedGroups[i] == this.groups[j].name) {
+              this.groups[j].loaded=false;
+              if (i < this.selectedGroups.length / 2) {
+                this.groups[j].reverse=false;
+              } else {
+                this.groups[j].reverse=true;
+              }
+              groupsToSend.push(this.groups[j]);
+              this.getGroupData(this.groups[j], groupsToSend);
+            }
+          }
+        }
+      } else {
+        this.toastr.error('Error Message', 'Group 1 cannot have more than 2 files of the same type while comparing it to another group', { positionClass: 'toast-bottom-right' });
+      }
+    }
+  }
+
+
+  chechGroup1Okay() {
+
+    for (let i = 0; i < this.selectedGroups.length; i++) {
+      if (this.selectedGroups[i] == 'Group 1') {
+        let items = this.groups[0].items;
+        let nbVcf = 0, nbAnnot = 0, nbDE = 0, nbGenomicCovFiles = 0, nbTranscriptomicCovFiles = 0, nbExpressionFiles = 0;
+        for (let j = 0; j < items.length; j++) {
+          switch (items[j].format) {
+            case 'vcf':
+
+              if (++nbVcf === 2) {
+                return false;
+              }
+
+              break;
+            case 'annotation':
+              if (++nbAnnot === 2) {
+                return false;
+              }
+              break;
+            case 'diffExp':
+              if (++nbDE === 2) {
+                return false;
+              }
+              break;
+            case 'de':
+              if (++nbDE === 2) {
+                return false;
+              }
+              break;
+            case 'bam':
+              if (++nbGenomicCovFiles === 2) {
+                return false;
+              }
+              break;
+            case 'bai':
+              if (++nbGenomicCovFiles === 2) {
+                return false;
+              }
+              break;
+            case 'bedcov':
+              if (++nbTranscriptomicCovFiles === 2) {
+                return false;
+              }
+              if (++nbExpressionFiles === 2) {
+              }
+              break;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  getGroupData(group: CircosGroup, groupsToSend: CircosGroup[]) {
+    const files = [];
+    for (let i = 0; i < group.items.length; i++) {
+      files.push(group.items[i].id);
+    }
+    //const that = this;
+    group.isGenomeViewLoaded = true;
+
+
+    const url = environment.host + 'getBins?files=' + JSON.stringify(files);
+    this.http.get(url).subscribe((data: any) => {
+      let chromosomes = [{ id: 'All', length: null, start: 0, end: 100 }];
+      for (let i = 0; i < data.fasta.data.length; i++) {
+        chromosomes.push({ id: data.fasta.data[i][0], length: data.fasta.data[i][1], start: 0, end: data.fasta.data[i][1] - 1 });
+      }
+      let arr = [data.fasta];
+      arr = arr.concat(data.tracks);
+      for (let i = 0; i < group.items.length; i++) {
+        for (let j = 0; j < arr.length; j++) {
+          if (arr[j]._id === group.items[i].id || arr[j].file === group.items[i].id) {
+
+            group.items[i].data = arr[j].data;
+            group.items[i].dataUnscaled = arr[j].data;
+
+            group.chromosomes = chromosomes;
+            break;
+          }
+        }
+      }
+      for (let i = 0; i < groupsToSend.length; i++) {
+        if (groupsToSend[i].name === group.name) {
+          groupsToSend[i].loaded = true;
+          let canSend = true;
+          for (let j = 0; j < groupsToSend.length; j++) {
+            if (!groupsToSend[j].loaded) {
+              canSend = false;
+              break;
+            }
+          }
+          if (canSend) {
+            this.onDisplayGroups.emit(groupsToSend);
+          }
+          break;
+        }
+      }
+    },
+      error => {
+        console.log(error);
+      });
+  }
+
+
+  selectChromosome(groupIndex, obj) {
+
+    this.loadingService.isCharging = true;
+
+    if (this.selectedGroups.length > 1 && !this.groups.find(group => group.chromosomeSelected === false)) {
+      let group;
+      for (let i = 0; i < this.groups.length; i++) {
+        if (i !== groupIndex) {
+          group = this.groups[i];
+          for (let item of group.items) {
+            item.data = item.dataUnscaled;
+          }
+        }
+      }
+    }
+
+
+    const files = [];
+    let group = this.groups[groupIndex];
+
+
+    for (let i = 0; i < group.items.length; i++) {
+      files.push(group.items[i].id);
+    }
+
+
+    let url;
+    if (group.selectedChromosome.id !== 'All') {
+      url = environment.host + 'getBins?files=' + JSON.stringify(files) + '&chr=' + group.selectedChromosome.id;
+    } else {
+      url = environment.host + 'getBins?files=' + JSON.stringify(files);
+    }
+    this.http.get(url).subscribe((data: any) => {
+
+
+      if (group.selectedChromosome.id !== 'All') {
+        data.fasta.data = [[group.selectedChromosome.id, group.selectedChromosome.length]];
+        group.chromosomeSelected = true;
+        group.end = group.selectedChromosome.end - 1;
+        group.range[1] = group.selectedChromosome.end - 1;
+        group.start = 0;
+        group.range[0] = 0;
+        group.range = JSON.parse(JSON.stringify(group.range));
+      } else {
+        group.chromosomeSelected = false;
+      }
+      let arr = [data.fasta];
+      arr = arr.concat(data.tracks);
+      for (let i = 0; i < group.items.length; i++) {
+        for (let j = 0; j < arr.length; j++) {
+          if (arr[j]._id === group.items[i].id || arr[j].file === group.items[i].id) {
+            group.items[i].data = arr[j].data;
+            group.items[i].dataUnscaled = arr[j].data;
+            break;
+          }
+        }
+      }
+      if (this.selectedGroups.length > 1 && group.selectedChromosome.id !== 'All') {
+        this.rescaleBins(groupIndex);
+      }
+      if (group.selectedChromosome.id === 'All') {
+        for (let i = 0; i < this.groups.length; i++) {
+          if (i !== groupIndex && this.groups[i].selectedChromosome.id !== 'All') {
+            this.rescaleBins(i);
+          }
+        }
+      }
+      if (group.name === 'Group 1' && this.selectedGroups.length === 1) {
+        this.onDisplayGroup1.emit(data);
+      } else {
+        const groupsToSend: Array<CircosGroup> = [];
+        for (let i = 0; i < this.selectedGroups.length; i++) {
+          for (let j = 0; j < this.groups.length; j++) {
+            if (this.selectedGroups[i] === this.groups[j].name) {
+              this.groups[j].loaded=true;
+              if (i < this.selectedGroups.length / 2) {
+                this.groups[j].reverse= false;
+              } else {
+                this.groups[j].reverse= true;
+              }
+              groupsToSend.push(this.groups[j]);
+            }
+          }
+        }
+        this.onDisplayGroups.emit(groupsToSend);
+      }
+    },
+      error => {
+
+      });
+  }
+
+
+  rescaleBins(groupIndex) {
+
+    let binSize;
+    const group = this.groups[groupIndex];
+    //for (let i = 0; i < this.groups.length; i++) {
+    //if (i !== groupIndex) {
+    for (let fileNode of this.groups[groupIndex].items) {
+      if (!fileNode.isFasta) {
+        const bins = fileNode.data[0];
+        binSize = Math.abs(bins.end - bins.start);
+        break;
+      }
+    }
+    //}
+    //}
+    let scaledBins;
+
+    for (let i = 0; i < group.items.length; i++) {
+      if (!group.items[i].isFasta && !group.items[i].isLink) {
+        let item = group.items[i];
+        scaledBins = [];
+
+        let prototype;
+        for (let i = 0; i < Math.round(group.selectedChromosome.length / binSize); i++) {
+          prototype = JSON.parse(JSON.stringify(item.data[0]));
+          for (let property in prototype) {
+            if (prototype.hasOwnProperty(property)) {
+              if (property != "start" && property != "end" && property != "chr" && property != "name") {
+                prototype[property] = 0;
+              }
+
+            }
+          }
+          prototype.start = i * binSize;
+          prototype.end = (i + 1) * binSize;
+          scaledBins.push(prototype)
+        }
+        let scaledBin;
+        for (let bin of item.dataUnscaled) {
+          scaledBin = scaledBins[Math.floor(bin.start / binSize)];
+          for (let property in scaledBin) {
+            if (scaledBin.hasOwnProperty(property)) {
+              if (property !== 'start' && property !== 'end' && property !== 'chr' && property !== 'name') {
+                scaledBin[property] += bin[property];
+              }
+            }
+          }
+        }
+
+        item.data = scaledBins;
+      }
+    }
+  }
+
+
+  zoomIn(groupIndex, obj) {
+    this.loadingService.isCharging = true;
+
+    if (obj) {  // obj comes from OnMouseUp() in biocircos so is only set for a clicked chromosome
+      this.groups[groupIndex] = obj;
+    }
+
+    let files = [];
+    let group = this.groups[groupIndex];
+    let fasta;
+    for (let i = 0; i < group.items.length; i++) {
+      if (group.items[i].format !== 'fasta') {
+        files.push(group.items[i].id);
+      } else {
+        fasta = group.items[i];
+      }
+    }
+    const chrData = {
+      chr: this.groups[groupIndex].selectedChromosome.id, start: this.groups[groupIndex].range[0],
+      end: this.groups[groupIndex].range[1]
+    };
+    this.chromosomeZoomed = chrData.chr;
+    this.zoomStart = chrData.start;
+    let isComparison = false;
+    if (this.selectedGroups.length > 1) {
+      isComparison = true;
+    }
+
+    const url = environment.host + 'getProjectData?files=' + JSON.stringify(files) +
+      '&chrData=' + JSON.stringify(chrData) + '&isComparison=' + isComparison;
+
+
+    this.http.get(url).subscribe((data: any) => {
+      fasta.data = [[this.groups[groupIndex].selectedChromosome.id, this.groups[groupIndex].range[1] - this.groups[groupIndex].range[0]]];
+
+      let arr = [fasta];
+      for (const file in data) {
+        if (data.hasOwnProperty(file)) {
+          arr.push(data[file]);
+        }
+      }
+      for (let i = 0; i < group.items.length; i++) {
+        for (let j = 0; j < arr.length; j++) {
+          if (arr[j]._id === group.items[i].id || arr[j].file === group.items[i].id) {
+            group.items[i].data = arr[j].data;
+            break;
+          }
+        }
+      }
+      if (group.name === 'Group 1' && this.selectedGroups.length === 1) {
+        const tracks = [];
+        for (let file in data) {
+          if (data.hasOwnProperty(file)) {
+            tracks.push(data[file]);
+          }
+        }
+
+        this.onDisplayGroup1.emit({ fasta: fasta, tracks: tracks, start: this.groups[groupIndex].range[0] })
+      } else {
+
+        let groupsToSend: Array<CircosGroup> = [];
+
+        for (let i = 0; i < this.selectedGroups.length; i++) {
+          for (let j = 0; j < this.groups.length; j++) {
+            if (this.selectedGroups[i] === this.groups[j].name) {
+              this.groups[j].loaded=true;
+              if (i < this.selectedGroups.length / 2) {
+                this.groups[j].reverse= false;
+              } else {
+                this.groups[j].reverse= true;
+              }
+              groupsToSend.push(this.groups[j])
+            }
+          }
+        }
+        this.onDisplayGroups.emit(groupsToSend);
+      }
+    },
+      error => {
+      })
+  }
+
+  getChromosomes(group, fasta) {
+    let url = environment.host + 'getChromosomes?id=' + fasta;
+    this.http.get(url).subscribe((data: any) => {
+      data = data.data;
+      let chrs = [];
+      for (let i = 0; i < data.length; i++) {
+        chrs.push({ id: data[i][0], length: data[i][1], start: 0, end: data[i][1] - 1 });
+      }
+      group.chromosomes = chrs;
+    }, error => {
+    });
+  }
+
+  onMoveToTarget(event) {
+    let fastaFound = false;
+    if (event.items[0].format === 'fasta') {
+      this.pickListSourceArray = this.pickListMasterSourceArray.filter(el => el.format != 'fasta')
+      this.getChromosomes(this.transferingGroup, event.items[0].id);
+    } else {
+      let lastInsertedFormat = this.pickListTargetArray[this.pickListTargetArray.length - 1].format;
+      let file;
+      for (let i = this.pickListSourceArray.length - 1; i >= 0; i--) {
+        file = this.pickListSourceArray[i];
+        if (file.format === lastInsertedFormat) {
+          this.pickListSourceArray.splice(i, 1);
+        }
+      }
+      let newItems = event.items;
+      for (let i = 0; i < newItems.length; i++) {
+        if (newItems[i].format === 'fasta') {
+          this.getChromosomes(this.transferingGroup, newItems[i].id);
+        } else {
+          let orderIndex;
+          let offset;
+          for (let j = 0; j < this.order.length; j++) {
+            if (newItems[i].format === this.order[j].format) {
+              orderIndex = j;
+              break;
+            }
+          }
+          let inserted = false;
+          for (let j = 0; j < this.pickListTargetArray.length; j++) {
+            if (this.pickListTargetArray[j].id === newItems[i].id || inserted) {
+              break;
+            } else {
+              for (let k = 0; k < this.order.length; k++) {
+                if (this.order[k].format === this.pickListTargetArray[j].format) {
+                  if (k > orderIndex) {
+                    this.pickListTargetArray.splice(this.pickListTargetArray.indexOf(newItems[i]), 1);
+                    this.pickListTargetArray.splice(j, 0, newItems[i]);
+                    inserted = true;
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      /*for (let i = 0; i < this.pickListTargetArray.length; i++) {
+
+        if (this.pickListTargetArray[i].format == 'fasta') {
+          if (fastaFound) {
+            this.pickListTargetArray.splice(i, 1);
+          } else {
+            this.getChromosomes(this.transferingGroup, this.pickListTargetArray[i].id);
+            fastaFound = true;
+          }
+        }
+      }*/
+    }
+  }
+
+  onMoveToSource(event) {
+    if (event.items[0].format === 'fasta') {
+      this.pickListSourceArray = this.pickListMasterSourceArray.filter(el => el.format === 'fasta');
+      this.transferingGroup.items = [];
+      this.pickListTargetArray = this.transferingGroup.items;
+    } else {
+      let isAlreadyInList;
+      for (let i = 0; i < event.items.length; i++) {
+        for (let j = 0; j < this.pickListMasterSourceArray.length; j++) {
+          if (this.pickListMasterSourceArray[j].format === event.items[i].format) {
+            isAlreadyInList = false;
+            for (let k = 0; k < this.pickListSourceArray.length; k++) {
+              if (this.pickListMasterSourceArray[j].id === this.pickListSourceArray[k].id) {
+                isAlreadyInList = true;
+                break;
+              }
+            }
+            if (!isAlreadyInList) {
+              this.pickListSourceArray.push(this.pickListMasterSourceArray[j]);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  changeCheckBoxes(group, checked) {
+    group.isChecked = checked;
+    const groupsChecked = [];
+    for (const group of this.groups) {
+      if (group.isChecked) {
+        groupsChecked.push(group.name);
+      }
+    }
+
+    this.displaySettingsService.groupsChecked = groupsChecked;
+
+    this.getGroupsData();
+
+  }
+
+  getGroups() {
+    return this.groups;
+  }
+
+  getFormatCategory(format) {
+    switch (format) {
+      case 'fasta':
+        return 'fasta';
+      case 'vcf':
+        return 'vcf';
+      case 'annotation':
+        return 'annotation';
+      case 'diffExp':
+        return 'DE';
+      case 'de':
+        return 'DE';
+      case 'bam':
+        return 'genomicCov';
+      case 'bai':
+        return 'genomicCov';
+      case 'bedcov':
+        return 'transcriptomicCov';
+      case 'results':
+        return 'expression';
+    }
+  }
+
+  updateLegend(legend) {
+    this.legendBooleans = legend;
+  }
+}

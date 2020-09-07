@@ -1,0 +1,346 @@
+<link
+  rel="stylesheet"
+  href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+  integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+  crossorigin="anonymous"
+/>
+<!-- <div class="container-page"> -->
+<form>
+  <div class="projects">
+    <ul id="project-headers">
+      <p>Select a Project</p>
+    </ul>
+    <ul *ngFor="let project of userService.projects; let i = index">
+      <a
+        *ngIf="!projectClicked || project.title !== projectSelected.title"
+        class="project-list"
+        (click)="projectChosen(project.id)"
+        ><b>{{ project.title }}</b></a
+      >
+      <a
+        *ngIf="projectClicked && project.title === projectSelected.title"
+        class="project-list"
+        (click)="projectChosen(project.id)"
+        style="color: darkblue"
+        ><b>{{ project.title }}</b></a
+      >
+      <!-- <i
+        class="material-icons"
+        *ngIf="projectClicked && project.title === projectSelected.title"
+        style="font-size: 15px; display: inline; color: #80c962; vertical-align: text-top"
+        >fiber_manual_record</i
+      > -->
+    </ul>
+  </div>
+  <div class="rightside-box">
+    <mat-tab-group>
+      <mat-tab label="Files">
+        <div *ngIf="projectClicked" class="files-div" class="tab">
+          <ng-container
+            *ngIf="
+              projectSelected.description;
+              then isDescription;
+              else noDescription
+            "
+          ></ng-container>
+          <ng-template #isDescription>
+            <p class="description" #projectDesc>
+              {{ projectSelected.description }}
+              <i
+                class="material-icons"
+                matTooltip="Add or Update Project Description"
+                style="margin-left: 2rem;"
+                (click)="updateDescription()"
+              >
+                edit
+              </i>
+            </p>
+          </ng-template>
+          <ng-template #noDescription>
+            <p class="description">
+              No description provided.
+              <i
+                class="material-icons"
+                matTooltip="Edit Project Description"
+                style="margin-left: 2rem"
+                (click)="updateDescription()"
+              >
+                edit
+              </i>
+            </p>
+          </ng-template>
+          <form *ngIf="editDescription" class="noDescriptionForm">
+            <!-- <mat-form-field> -->
+            <div>
+             <textarea *ngIf="projectSelected.description"
+                matInput
+                class="editDescription"
+                placeholder="Add a project description"
+                type="text"
+                name="editDescription"
+                [(ngModel)]="description"
+                title="Add a project description"
+              >{{projectSelected.description}}</textarea>
+              <textarea *ngIf="!projectSelected.description"
+                matInput
+                class="editDescription"
+                placeholder="Add a project description"
+                [(ngModel)]="description"
+                name="editDescription"
+                type="text"
+                title="Add a project description"
+              ></textarea>
+              <!-- </mat-form-field> -->
+              <button type="button"
+                *ngIf="editDescription"
+                class="description-button"
+                mat-raised-button
+                (click)="submitDescription(description, projectID); projectChosen(projectID); descriptionEdited()"
+              >
+                Submit Description
+              </button>
+            </div>
+          </form>
+          <table class="files-table">
+            <caption style="font-size:17px">Project Files</caption>
+            <thead>
+              <th>File Format</th>
+              <th>File Names</th>
+            </thead>
+            <tbody>
+              <tr class="table-row" *ngFor="let fasta of fastaFiles">
+                <td class="format">{{ fasta.format }}</td>
+                <td class="file-name">{{ fasta.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let gff of annotationFiles">
+                <td class="format">{{ gff.format }}</td>
+                <td class="file-name">{{ gff.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let vcf of vcfFiles">
+                <td class="format">{{ vcf.format }}</td>
+                <td class="file-name">{{ vcf.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let def of DEFiles">
+                <td class="format">{{ def.format }}</td>
+                <td class="file-name">{{ def.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let gC of genomicCovFiles">
+                <td class="format">{{ gC.format }}</td>
+                <td class="file-name">{{ gC.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let tC of transcriptomicCovFiles">
+                <td class="format">{{ tC.format }}</td>
+                <td class="file-name">{{ tC.name }}</td>
+              </tr>
+              <tr class="table-row" *ngFor="let ex of expressionFiles">
+                <td class="format">{{ ex.format }}</td>
+                <td class="file-name">{{ ex.name }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-tab>
+      <mat-tab label="Issues">
+        <div *ngIf="projectClicked" class="tab">
+         <p class="new-issue-p">Add a New Issue</p>
+          <div class="new-issue">
+            <form class="example-form-issues">
+              <mat-form-field class="example-full-width">
+                <mat-error *ngIf="issueFormControl.hasError('required')"
+                  >Please enter an issue title</mat-error
+                >
+                <input
+                  matInput
+                  [formControl]="issueFormControl"
+                  [errorStateMatcher]="matcher"
+                  class="issue-title"
+                  type="text"
+                  placeholder="Title"
+                  id="issue-title"
+                  #issuetitle
+                  name="issue-title"
+                />
+              </mat-form-field>
+              <textarea
+                class="issue-comment"
+                type="text"
+                placeholder="Leave a comment"
+                id="issue-comment"
+                #issuecomment
+              ></textarea>
+              <button type="reset"
+                [disabled]="issueFormControl.hasError('required')"
+                class="issue-button"
+                mat-raised-button
+                (click)="
+                  submitIssue(
+                    issuetitle.value,
+                    issuecomment.value,
+                    projectID,
+                    userID
+                  ); projectChosen(projectID)
+                "
+              >
+                Submit Issue
+              </button>
+            </form>
+          </div>
+          <ng-container *ngIf="projectSelected.issues">
+              
+            <table class="issues-table">
+                <caption class="issues-table-caption">Project Issues<button class="solved-button"
+                  mat-raised-button (click)="viewSolved()" style="float: right; width: auto">View Solved Issues</button></caption>
+              <thead>
+                <th>Issue</th>
+                <th>Comment</th>
+                <th>Solved</th>
+                <th>Submitted</th>
+                <th>Submitted by</th>
+              </thead>
+              <ng-container
+                *ngFor="
+                  let issue of projectSelected.issues.slice().reverse();
+                  let i = index
+                "
+              >
+                <tr *ngIf="!issue.solved" class="issues-list">
+                  <td class="issue" title="{{issue.longTitle}}">{{ issue.title }}</td>
+                  <td class="comment" title="{{ issue.longComment }}">
+                    {{ issue.comment }}
+                  </td>
+                  <td class="fixed-or-not">
+                    <mat-checkbox
+                      [(ngModel)]="issue.solved"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="
+                        issueSolved(projectID, issue._id, issue.solved, i)
+                      "
+                    >
+                    </mat-checkbox>
+                  </td>
+                  <td class="date">{{ issue.date }}</td>
+                  <td class="submittedBy">{{ issue.user }}</td>
+                </tr>
+              </ng-container>
+            </table>
+          </ng-container>
+          
+          <ng-container *ngIf="projectSelected.issues && viewSolvedBoolean">
+            <table class="issues-table">
+                <caption style="font-size:17px">Solved Issues</caption>
+              <thead>
+                <th>Issue</th>
+                <th>Comment</th>
+                <th>Solved</th>
+                <th>Submitted</th>
+                <th>Submitted by</th>
+              </thead>
+              
+              <ng-container
+                *ngFor="
+                  let issue of projectSelected.issues.slice().reverse();
+                  let i = index
+                "
+              >
+                <tr *ngIf="issue.solved" class="issues-list">
+                  <td class="issue" title="{{issue.longTitle}}">{{ issue.title }}</td>
+                  <td class="comment" title="{{ issue.longComment }}">
+                    {{ issue.comment }}
+                  </td>
+                  <td class="fixed-or-not">
+                    <mat-checkbox
+                      [(ngModel)]="issue.solved"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="
+                        issueSolved(projectID, issue._id, issue.solved, i)
+                      "
+                    >
+                    </mat-checkbox>
+                  </td>
+                  <td class="date">{{ issue.date }}</td>
+                  <td class="submittedBy">{{ issue.user }}</td>
+                </tr>
+              </ng-container>
+            </table>
+          </ng-container>
+        </div>
+      </mat-tab>
+      <mat-tab label="Access Rights">
+        <div *ngIf="projectClicked" class="tab">
+          <div class="radio-group">
+            <div class="subhead">
+              <h2 class="subhead-heading">Visibility</h2>
+            </div>
+            <mat-radio-group>
+              <mat-radio-button
+                (click)="updateProject(true, projectSelected.title)"
+                value="projectSelected.public"
+                [checked]="projectSelected.public"
+                >Public</mat-radio-button
+              >
+              <p style="padding-left: 28px; font-size: 12px; color: #586069">
+                Anyone can see this project. You choose who can make changes.
+              </p>
+              <br />
+              <mat-radio-button
+                (click)="updateProject(false, projectSelected.title)"
+                value="!projectSelected.public"
+                [checked]="!projectSelected.public"
+                >Private</mat-radio-button
+              >
+              <p style="padding-left: 28px; font-size: 12px; color: #586069">
+                You choose who can see and make changes to this project.
+              </p>
+            </mat-radio-group>
+          </div>
+          <!-- <div class="add-collaborator"> -->
+            <form class="collab-form">
+              <mat-form-field class="example-full-width collaborators">
+                <input
+                  type="text"
+                  placeholder="Search Users..."
+                  aria-label="Number"
+                  matInput
+                  [formControl]="collabFormControl"
+                  [matAutocomplete]="auto"
+                  #collabUsername
+                />
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option
+                    *ngFor="let option of (filteredOptions | async)"
+                    [value]="option"
+                  >
+                    {{ option }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              <button
+            type="reset"
+              [disabled]="collabFormControl.hasError('required')"
+              mat-raised-button
+              class="collab-button"
+              (click)="addCollaborator(projectID, collabUsername.value)"
+            >
+              Add Collaborator
+            </button>
+            </form>
+            
+          <!-- </div> -->
+          <table class="collab-table">
+            <caption style="font-size:17px">Collaborators</caption>
+            
+            <thead>
+              <th>Username</th>
+              <th>Email</th>
+            </thead>
+            <tr *ngFor="let user of projectCollabs">
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</form>
+<!-- </div> -->

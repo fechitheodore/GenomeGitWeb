@@ -1,0 +1,19 @@
+
+.owl-theme .owl-controls .owl-buttons div {
+    color: #39c;
+    margin: 5px 20px;
+    padding: 2px 15px;
+    font-size: 23px;
+    border-radius: 100%;
+    background: #FFFFFF;
+    opacity: 1;
+}
+
+.owl-theme .owl-controls .owl-page span {
+    border: 1px solid white;
+    background: none;
+}
+.owl-theme .owl-controls .active span{
+    background-color: white;
+}
+

@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+
+<div class="explore" style="display: grid;" align="center">
+    <i class="fas fa-dna" style="font-size: 17rem; color: #6cc644" title="genomeGitWeb"></i>
+    <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <input id="search-box"
+            type="text"
+            placeholder="Search Projects..."
+            aria-label="Number"
+            matInput
+            [formControl]="myControl"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option class="search-result"
+              *ngFor="let option of (filteredOptions | async)"
+              [value]="option.value"
+              [routerLink]="['/app', option.id]"
+            >
+              {{ option.value }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+</div>
+

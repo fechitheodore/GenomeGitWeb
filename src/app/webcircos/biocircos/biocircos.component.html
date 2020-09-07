@@ -1,0 +1,37 @@
+<div style="display:inline-block;width:80%; height:100%">
+  <div id="verticalLayout">
+    <p id="instructionMessage" *ngIf="!circosDisplayed">
+      {{ msg }}
+    </p>
+
+    <div id="circosSpinnerContainer">
+      <fa
+        *ngIf="circosDisplayed"
+        name="cogs"
+        pTooltip="Customisation Panel"
+        size="3x"
+        id="displayCustomiseIcon"
+        (click)="openCustomisationPanel()"
+      ></fa>
+
+      <div #biocircos id="biocircos"></div>
+      <p-progressSpinner
+        #progressSpinner
+        *ngIf="loadingService.isCharging"
+        strokeWidth="8"
+        fill="#EEEEEE"
+        animationDuration="10.0s"
+      ></p-progressSpinner>
+    </div>
+  </div>
+</div>
+
+<circos-controls
+  #circosControls
+  (onGroupAdded)="updateGroups($event)"
+  (onDisplayGroups)="displayChromosomeGroups($event)"
+  (onReorder)="reorderTracks($event)"
+  (onDisplayGroup1)="submitDisplayCircos($event, 'single')"
+  (ClearMessage)="clear_messages()"
+  (CreateMessage)="create_msgs($event)"
+></circos-controls>

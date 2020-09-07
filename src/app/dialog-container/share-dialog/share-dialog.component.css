@@ -1,0 +1,12 @@
+p-dialog >>> .ui-dialog{
+  width:40vw;
+}
+
+p-table >>> .ui-table{
+  margin-bottom: 25px;
+}
+
+.ui-float-label{
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}

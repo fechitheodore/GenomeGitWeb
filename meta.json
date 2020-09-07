@@ -1,0 +1,5 @@
+{ 
+    "_id" : ObjectId("5aa4180c4ce3e7274cf75065"), 
+    "projectCount" : NumberLong(247), 
+    "quantity" : NumberInt(1)
+}

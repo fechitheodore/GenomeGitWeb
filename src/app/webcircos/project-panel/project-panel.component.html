@@ -1,0 +1,210 @@
+<div>
+  <!-- *ngIf="userService.getIsSignedIn()" -->
+  <p-panel header="Select project">
+    <p-dropdown *ngIf="!userService.selectedProject" [(options)]="userService.projects"
+      [(ngModel)]="userService.selectedProject" (onChange)="getFilesNames()" optionLabel="title" editable="false">
+    </p-dropdown>
+    <p-dropdown *ngIf="userService.selectedProject && !routerLong" [(options)]="userService.projects"
+      [(ngModel)]="userService.selectedProject" (onChange)="getFilesNames()" optionLabel="title" editable="false">
+    </p-dropdown>
+    <p-dropdown *ngIf="routerLong" [(options)]="userService.projects" [(ngModel)]="userService.selectedProject.title"
+      (onChange)="getFilesNames()" optionLabel="title" editable="false"></p-dropdown>
+    <fa *ngIf="userService.getIsSignedIn()" name="plus-circle" class="projectfa" pTooltip="Create a Project"
+      (click)="dialogService.addProjectDialog.next(this)"></fa>
+    <!-- <fa
+      name="copy"
+      class="projectfa"
+      *ngIf="userService.selectedProject"
+      pTooltip="Import file from another Project"
+      size="1.8x"
+      (click)="dialogService.importFileDialog.next(this)"
+    ></fa> -->
+    <!-- <fa
+      name="share-alt"
+      class="projectfa"
+      *ngIf="userService.selectedProject"
+      pTooltip="Share Project"
+      size="1.8x"
+      (click)="dialogService.shareProjectDialog.next()"
+    ></fa> -->
+    <fa name="trash" class="projectfa" *ngIf="userService.selectedProject" pTooltip="Delete Project" size="1.8x"
+      (click)="deleteProject()"></fa>
+    <fa name="refresh" class="projectfa" *ngIf="userService.selectedProject" pTooltip="Refresh Project" size="1.8x"
+      (click)="getFilesNames()"></fa>
+  </p-panel>
+</div>
+
+<p-fileUpload #fileupload mode="basic" name="myfile[]" auto="auto" customUpload="true"
+  (uploadHandler)="uploadFile($event)"></p-fileUpload>
+
+<div *ngIf="userService.selectedProject || !userService.getIsSignedIn()">
+  <p-progressSpinner *ngIf="isCharging && userService.getIsSignedIn()" [style]="{ width: '50px', height: '50px' }"
+    strokeWidth="8" fill="#EEEEEE" animationDuration="10.0s"></p-progressSpinner>
+  <div>
+    <p-panel header="Uploads" *ngIf="uploads.length > 0">
+      <div *ngFor="let upload of uploads">
+        <span>{{ upload.name }}</span>
+        <p-progressBar value="{{ upload.value }}"></p-progressBar>
+      </div>
+    </p-panel>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <p-panel>
+      <p-header>
+        <div class="ui-helper-clearfix" style="border: none">
+          <span class="ui-panel-title" style="font-size:16px;display:inline-block">Files</span><i class="material-icons"
+            (click)="dialogService.fileInfoDialog.next()" style="font-size: 2rem"
+            title="Group and File structure information">
+            info
+          </i>
+          <!-- <fa
+          id="otherFileUp"
+          class="addFileFa"
+          name="plus"
+          pTooltip="Upload File"
+          (click)="onAddFileClick(null)"
+          style="font-size: 1.6rem"
+        >
+        </fa> -->
+        </div>
+      </p-header>
+      <!-- <p-accordion [multiple]="true"> -->
+      <!-- <p-accordionTab [selected]="true"> -->
+      <!-- <p-header> -->
+      <!-- <div class="ui-helper-clearfix">
+            <span
+              class="ui-panel-title"
+              style="font-size:16px;display:inline-block"
+              >Files</span
+            ><i class="material-icons" (click)="dialogService.fileInfoDialog.next()">
+              info
+              </i>
+            <fa
+              id="otherFileUp"
+              class="addFileFa"
+              name="plus"
+              pTooltip="Upload File"
+              (click)="onAddFileClick(null)"
+            >
+            </fa>
+          </div> -->
+      <!-- </p-header> -->
+      <div>
+        <cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+          <cdk-nested-tree-node *cdkTreeNodeDef="let node">
+            <!-- <li class="mat-tree-node" style="font-size: 12px"> -->
+            <!-- <button mat-icon-button disabled></button> -->
+            <div style="padding-left: 3.5rem; width: 100%">
+              <p *ngIf="node.commitInfo" title="{{ node.commitInfo.message }}">
+                {{ node.commitInfo.created }}
+              </p>
+              <p title="{{ node.fileName }}">
+                {{ node.shortFileName }}: {{ node.type
+                }}<fa name="trash" class="projectfa" *ngIf="node.isManual" pTooltip="Delete manually added file"
+                  size="1.5x" (click)="deleteFile(node)" style="float: unset; margin-left: 5px"></fa>
+                <mat-checkbox (change)="toggleSelectedFiles(node)" [checked]="node.isSelected" style="font-size: 12px">
+                </mat-checkbox>
+              </p>
+
+              <!-- <mat-checkbox
+                    *ngIf="node.isLink"
+                    (change)="onChangeLinksViewFormat(node)"
+                    [checked]="node.displayLinkArc"
+                  ></mat-checkbox> -->
+              <!-- <mat-checkbox *ngIf="node.isLink" class="checklist-leaf-node" (change)="onChangeLinksViewFormat(node)"
+                  [checked]="node.displayLinkArc"></mat-checkbox> -->
+            </div>
+            <!-- </li> -->
+          </cdk-nested-tree-node>
+          <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild">
+            <div style="border-top: solid 6px #80c962; font-size: 12px; margin-bottom: 2rem;">
+              <button mat-icon-button cdkTreeNodeToggle [cdkTreeNodeToggleRecursive]="recursive"
+                [attr.aria-label]="'toggle ' + node.fileName" style="display: contents" [disableRipple]="true">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{
+                    nestedTreeControl.isExpanded(node)
+                      ? "expand_more"
+                      : "chevron_right"
+                  }} </mat-icon><span *ngIf="node.commitInfo" title="Commit message: {{ node.commitInfo.longMessage }}
+Commit date: {{ node.commitInfo.created }}" style="border-bottom: solid 1px lightgray">{{ node.commitInfo.message }}:
+                  {{ node.commitInfo.created }} <p-fileUpload #fileupload mode="basic" name="myfile[]" auto="auto"
+                    customUpload="true" (uploadHandler)="uploadFile($event)"></p-fileUpload>
+                  <fa id="otherFileUp" class="addFileFa" name="plus" pTooltip="Upload File"
+                    (click)="onAddFileClick(node)" style="margin: 0; font-size: 15px;"></fa>
+                </span>
+              </button>
+              <p title="{{ node.fileName }}" style="font-weight: bold; margin-left: 2.5rem"
+                [ngStyle]="{ color: node.color }">
+                {{ node.shortFileName }}: {{ node.type }}
+                <mat-checkbox style="float: right" (change)="toggleSelectedFiles(node)" [checked]="node.isSelected">
+                </mat-checkbox>
+
+              </p>
+              <!-- <fa
+                  id="otherFileUp"
+                  class="addFileFa"
+                  name="plus"
+                  pTooltip="Upload File"
+                  (click)="onAddFileClick(node)"
+                ></fa> -->
+              <div *ngIf="nestedTreeControl.isExpanded(node)">
+                <ng-container cdkTreeNodeOutlet></ng-container>
+              </div>
+            </div>
+          </cdk-nested-tree-node><br />
+        </cdk-tree>
+
+        <!-- <cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="example-tree-node">
+              <div class="sub-tree" style="padding-left: 2rem; display: inline;">
+                <p *ngIf="node.commitInfo" title={{node.commitInfo.message}}>{{node.commitInfo.created}}</p>
+                <p title={{node.fileName}}>
+                  <mat-checkbox class="checklist-leaf-node" (change)="toggleSelectedFiles(node)"
+                    [checked]="node.isSelected" ></mat-checkbox>
+                  {{ node.shortFileName }}: {{ node.type }}
+                </p>
+
+              </div>
+              <br />
+            </cdk-nested-tree-node>
+
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="example-tree-node"
+              style="display: inline-block; text-overflow: clip">
+              <button mat-icon-button [attr.aria-label]="'toggle ' + node.fileName" cdkTreeNodeToggle>
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{
+                    nestedTreeControl.isExpanded(node)
+                      ? "expand_more"
+                      : "chevron_right"
+                  }}
+                </mat-icon>
+              </button>
+
+              <div class="group" style="border: solid 1px black; max-width: 230px; min-width: 230px; font-size: 12px;">
+                  <p *ngIf="node.commitInfo"   title={{node.commitInfo.message}}>{{node.commitInfo.created}}</p>
+                <p  title={{node.fileName}} style="font-weight: bold" [ngStyle]="{'color': node.color}">
+                  <mat-checkbox class="checklist-leaf-node" (change)="toggleSelectedFiles(node)"
+                    [checked]="node.isSelected" ></mat-checkbox>
+                  {{ node.shortFileName }}: {{ node.type }}
+                </p>
+                <fa id="otherFileUp" class="addFileFa" name="plus" pTooltip="Upload File"
+                  (click)="onAddFileClick(node)"></fa>
+                <div [class.example-tree-invisible]="
+                    !nestedTreeControl.isExpanded(node)
+                  ">
+                  <ng-container cdkTreeNodeOutlet></ng-container>
+                </div>
+              </div>
+            </cdk-nested-tree-node>
+          </cdk-tree> -->
+      </div>
+      <!-- </p-accordionTab> -->
+      <!-- </p-accordion> -->
+    </p-panel>
+    <p-panel header="Download">
+      <p-button label="Save as SVG" (onClick)="saveSvg(svg, 'test.svg')" style="font-size: 12px;"></p-button>
+      <p-button label="Save as PNG" (onClick)="savePNG()" title="Download plot as png"
+        style="float: right; font-size: 12px;"></p-button>
+    </p-panel>
+  </div>
+</div>

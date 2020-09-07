@@ -1,0 +1,9 @@
+p-table, p-dropdown {
+  margin-bottom: 20px;
+  display: block;
+}
+
+:host {
+  padding-bottom: 30px;
+  text-align: center;
+}

@@ -1,0 +1,183 @@
+
+<!-- ------------------------SIGN IN----------------------------------- -->
+<p-sidebar [(visible)]="signInShown" position="right">
+
+
+  <form class="example-form" style="margin-top: 50px">
+    <mat-form-field class="example-full-width" >
+      <input matInput placeholder="Username" [formControl]="usernameFormControlSignIn" [errorStateMatcher]="matcher" >
+
+      <mat-error *ngIf="usernameFormControlSignIn.hasError('required')">
+        Username is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Password" type="password" [formControl]="passwordFormControlSignIn" [errorStateMatcher]="matcher">
+
+      <mat-error *ngIf="passwordFormControlSignIn.hasError('required')">
+        Password is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br/>
+
+    <button mat-button color="primary" (click)="submitSignIn()" [disabled]="!usernameFormControlSignIn.valid || !passwordFormControlSignIn.valid">Sign in</button>
+
+  </form>
+  
+
+  <div align = "center">
+      <button mat-button color="primary"  (click)="resetClicked()" style="margin-top: 20px">Change password</button>
+    </div>    
+
+    <br/>
+  <div align = "center">
+  <button mat-button color="primary"  (click)="forgetClicked
+  ()" >Forgotten password</button>
+</div>
+
+
+  <p-message #signInMessage [style.visibility]="visibilityMessageSignIn"></p-message><br/>
+
+</p-sidebar>
+
+
+
+<!-- -------------------------------SIGN UP----------------------------- -->
+
+<p-sidebar [(visible)]="signUpShown" position="right">
+
+
+  <form class="example-form">
+    <!-- <script src="public\js\jquery.min.js">
+      
+      </script> -->
+<br/>
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Username" [formControl]="usernameFormControlSignUp" [errorStateMatcher]="matcher">
+
+      <mat-error *ngIf="usernameFormControlSignUp.hasError('required')">
+        Username is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br/>
+
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Password" type="password" [formControl]="passwordFormControlSignUp" [errorStateMatcher]="matcher">
+
+      <mat-error *ngIf="passwordFormControlSignUp.hasError('required')">
+        Password is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br/>
+
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Email" [formControl]="emailFormControl" [errorStateMatcher]="matcher">
+      
+      <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+        Please enter a valid email address
+      </mat-error>
+      <mat-error *ngIf="emailFormControl.hasError('required')">
+        Email is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br/>
+
+    <button mat-button color="primary" (click)="submitSignUp($event)" [disabled]="!usernameFormControlSignUp.valid || !emailFormControl.valid || !passwordFormControlSignUp.valid">Sign up</button>
+
+  </form>
+  <br/>
+
+
+
+  <p-message #signUpMessage [style.visibility]="visibilityMessageSignUp"></p-message><br/>
+
+</p-sidebar>
+
+
+
+<!-- --------------------------------FORGET PASSWORD--------------------------------------- -->
+
+<p-sidebar [(visible)]="forgetShown" position="right">
+
+
+    <form class="example-form">
+      <!-- <script src="public\js\jquery.min.js">
+        
+        </script> -->
+  
+      
+      <br/>
+  
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Email" [formControl]="emailFormControlForget" [errorStateMatcher]="matcher">
+        
+        <mat-error *ngIf="emailFormControlForget.hasError('email') && !emailFormControlForget.hasError('required')">
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="emailFormControlForget.hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <br/>
+  
+      <button mat-button color="primary" (click)="submitforget($event)" [disabled]="!emailFormControlForget.valid">Send Email</button>
+  
+    </form>
+    <br/>
+  
+  
+  
+    <p-message #forgetMessage [style.visibility]="visibilityMessageforget"></p-message><br/>
+  
+  </p-sidebar>
+
+
+<!-- -----------------------------RESET PASSWORD--------------------------------------- -->
+
+  <p-sidebar [(visible)]="resetShown" position="right">
+
+
+      <form class="example-form">
+        <!-- <script src="public\js\jquery.min.js">
+          
+          </script> -->
+    <br/>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Username" [formControl]="usernameFormControlReset" [errorStateMatcher]="matcher">
+    
+          <mat-error *ngIf="usernameFormControlReset.hasError('required')">
+            Username is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br/>
+    
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Old Password" type="password" [formControl]="passwordFormControlReset" [errorStateMatcher]="matcher">
+    
+          <mat-error *ngIf="passwordFormControlReset.hasError('required')">
+            Password is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br/>
+    
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="New Password" type="password" [formControl]="newpasswordFormControlReset" [errorStateMatcher]="matcher">
+
+          <mat-error *ngIf="newpasswordFormControlReset.hasError('required')">
+            New Password is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br/>
+    
+        <button mat-button color="primary" (click)="submitreset($event)" [disabled]="!usernameFormControlReset.valid || !passwordFormControlReset.valid || !newpasswordFormControlReset.valid">Reset Password</button>
+    
+      </form>
+      <br/>
+    
+    
+    
+      <p-message #resetMessage [style.visibility]="visibilityMessagereset"></p-message><br/>
+    
+    </p-sidebar>

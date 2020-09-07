@@ -1,0 +1,50 @@
+
+<p-dialog header="Title" [(visible)]="display" id="shareDialogRoot" #shareDialogRoot>
+
+  <p-table [value]="users" selectionMode="multiple" [(selection)]="selectedProjectUsers">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>E-mail</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="user" [pSelectableRowIndex]="rowIndex">
+            <td>{{user.firstName}}</td>
+            <td>{{user.lastName}}</td>
+            <td>{{user.email}}</td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-button label="Remove" (onClick)="removeUsers()"></p-button>
+
+<span class="ui-float-label">
+    <input type="text" pInputText id="searchInput" (input)="onSearchChange($event.target.value)" [(ngModel)]="searchEntry"/>
+    <label for="searchInput">Search for a user</label>
+</span>
+
+
+
+
+<p-table [value]="matchingUsers" selectionMode="single" [(selection)]="selectedMatchingUsers">
+  <ng-template pTemplate="header">
+      <tr>
+          <th>First name</th>
+          <th>Last name</th>
+          <th>E-mail</th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-user>
+      <tr [pSelectableRow]="user" >
+          <td>{{user.firstName}}</td>
+          <td>{{user.lastName}}</td>
+          <td>{{user.email}}</td>
+      </tr>
+  </ng-template>
+</p-table>
+
+<p-button label="Invite" (onClick)="inviteUsers()"></p-button>
+
+</p-dialog>

@@ -1,0 +1,54 @@
+#root {
+}
+
+#mainPanel {
+  height: calc(100vh - 50px);
+}
+
+project-panel {
+  /* height: 100%; */
+  width: 100%;
+  /* display: inline-block; */
+  vertical-align: top;
+}
+
+#circosLinearContainer {
+  height: 100%;
+  width: 100%;
+  vertical-align: top;
+  display: inline-block;
+}
+
+biocircos {
+  height: 95%;
+  width: 100%;
+  display: block;
+}
+
+app-linear {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav {
+  width: 25%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 0;
+  background: rgb(250,250,250);
+}
+
+mat-sidenav-content {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 5;
+}
+
+mat-drawer-container {
+  z-index: 0;
+}

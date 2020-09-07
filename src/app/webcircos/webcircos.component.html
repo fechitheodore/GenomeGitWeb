@@ -1,0 +1,34 @@
+<div id="root" #root>
+
+  <div id="mainPanel">
+
+    <mat-sidenav-container autosize>
+      <mat-sidenav [opened]="projectPanelOpened" mode="side">
+        <project-panel #projectPanel (displayRequest)="displayCircos($event)" (displayFileList)="sendFileList($event)" (onEmittingPopulatedPickList)="catchPickListEmittedApp($event)" (ClearMessage)="clear_message()" (CreateMessage)="create_message($event)"
+          (onAddGroup)="addGroup($event)" (onDeleteGroup)="deleteGroup($event)" (onEditGroup)=editGroup($event) (onClear)="clear()"
+           (onUpdateGroup1)="onUpdateGroup1($event)" (hasLinks)="hasLinks($event)" (onProjectSelected)="onProjectSelected()"
+           (displayFileLinks)="biocircos.displayFileLinks($event)" (onHideLinks)="biocircos.hideLinks()"></project-panel>
+      </mat-sidenav>
+      <mat-sidenav-content>
+        <div id="circosLinearContainer">
+          <app-biocircos #biocircos (onGroupListAdded)="updateGroups($event)" (onCircosClick)='passClickToLinear($event)'
+          (openCustomisation)=customisation.openCustomisationPanel()
+          (modeChanged)=customisation.setMode($event)></app-biocircos>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+
+
+  </div>
+
+
+
+  <genoverse #genoverse></genoverse>
+
+
+  <app-customisation-panel #customisation (onHighlightAnnotation)="catchHighlightGenes($event)"  (onChangeOnlyHomoSNP)="changeOnlyHomoSNP($event)" (onMessageChange)="onChangeDisplayMessage($event)"
+    (onGraphTypeChange)="catchGraphTypeSelection($event)"> </app-customisation-panel>
+
+</div>
+
+<app-dialog-container></app-dialog-container>

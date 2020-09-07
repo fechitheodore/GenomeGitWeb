@@ -1,0 +1,10 @@
+g1,g1chr,g1start,g1end,g2,g2chr,g2start,g2end,color,fusion,type,value
+Group 1,1,100,1000,Group 2,2,200,2000,#ff0000,test,neutral,1
+Group 1,6,200,2000000,Group 2,6,300,6000000,#00ff00,test2,enhance,2
+Group 1,6,220000,3000000,Group 2,8,906980,6000000,#00ff00,test3,inhibit,3
+Group 1,2,98800,1000000,Group 2,9,326500,600000,#00ff00,test4,enhance,4
+Group 1,5,210000,2040000,Group 2,2,30120,4000000,#00ff00,test5,enhance,5
+Group 1,6,23600,2000000,Group 2,1,98100,6000000,#ff0000,test6,neutral,6
+Group 1,4,288700,5000000,Group 2,5,3100,2000000,#00ff00,test7,neutral,7
+Group 1,8,175500,230000,Group 2,6,40000,600000,#00ff00,test8,inhibit,8
+Group 1,1,2000,200000,Group 2,3,69800,1021100,#00ff00,test9,inhibit,9

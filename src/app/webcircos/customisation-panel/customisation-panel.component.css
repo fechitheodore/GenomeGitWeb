@@ -1,0 +1,15 @@
+:host{
+  height: 100vh;
+  width:20vw;
+  z-index: 1000;
+}
+
+:host >>> .ui-togglebutton{
+  width: 99%;
+}
+
+tab0{ position:absolute; left:25px; }
+
+p-sidebar >>> .ui-sidebar{
+  overflow-y: scroll;
+}
